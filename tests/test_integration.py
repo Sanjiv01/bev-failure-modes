@@ -45,7 +45,7 @@ def test_first_frame_detects_cars():
 
 
 @needs_data
-@pytest.mark.skipif(not os.path.exists(os.path.join(OUT, "raw_preds.pkl")), reason="run `python -m bevdiag run` first")
+@pytest.mark.skipif(not os.path.exists(os.path.join(OUT, "tiny", "raw_preds.pkl")), reason="run `python -m bevdiag run` first")
 def test_official_metrics_reproduce():
     """Re-scores cached predictions with the devkit; guards against regressions in box conversion."""
     from nuscenes.nuscenes import NuScenes
@@ -56,10 +56,21 @@ def test_official_metrics_reproduce():
 
     nusc = NuScenes("v1.0-mini", DATA, verbose=False)
     infos = build_infos(nusc, mini_val)
-    with open(os.path.join(OUT, "raw_preds.pkl"), "rb") as f:
+    with open(os.path.join(OUT, "tiny", "raw_preds.pkl"), "rb") as f:
         preds = {p["token"]: p for p in pickle.load(f)}
     m = official_eval(nusc, infos, [preds[i.token] for i in infos], "mini_val", os.path.join(OUT, "test_tmp"), "t")
     with open(os.path.join(OUT, "metrics_baseline_mini_val.json")) as f:
         ref = json.load(f)
     assert m["mAP"] == pytest.approx(ref["mAP"], abs=1e-6)
     assert 0.22 < m["mAP"] < 0.32  # published BEVFormer-tiny: 0.252 on full val
+
+
+@pytest.mark.parametrize("variant", ["small", "base"])
+def test_bigger_checkpoints_load_strict(variant):
+    from bevdiag.model import CONFIGS, load_bevformer
+
+    path = os.path.join(ROOT, "checkpoints", CONFIGS[variant].ckpt)
+    if not os.path.exists(path):
+        pytest.skip(f"{variant} checkpoint not downloaded")
+    m = load_bevformer(path, "cpu", variant)  # raises on any missing / unexpected key
+    assert m.pts_bbox_head.bev_h == CONFIGS[variant].bev

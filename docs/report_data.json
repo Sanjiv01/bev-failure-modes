@@ -7268,7 +7268,3352 @@
   "fixB_f1": [
    0.6291829966837503,
    0.5631515151515152
-  ]
+  ],
+  "base_recall_0_30": 0.7137891077636153,
+  "base_recall_30_50": 0.2823275862068966,
+  "base_recall_40_50": 0.13109756097560976,
+  "base_large_recall_30_50": 0.225,
+  "imp_recall_0_30": 0.8547701815372731,
+  "imp_recall_30_50": 0.5355603448275862,
+  "imp_recall_40_50": 0.3628048780487805,
+  "imp_large_recall_30_50": 0.625,
+  "imp_mAP": 0.3731220746735975,
+  "imp_NDS": 0.4250050799307048,
+  "imp_precision": 0.8419094854308742,
+  "imp_recall": 0.71605589243343,
+  "base_precision": 0.7319694868238558,
+  "base_recall": 0.5565515423147904,
+  "imp_system": "base + temporal+lidar",
+  "base_fp": 773,
+  "imp_fp": 510,
+  "base_fn_in_grid": 1448,
+  "imp_fn_in_grid": 843
+ },
+ "improvement": {
+  "ladder": [
+   {
+    "variant": "tiny",
+    "model": "BEVFormer-tiny",
+    "fix": "none",
+    "mAP": 0.26375626104304073,
+    "NDS": 0.3265724862510466,
+    "class_ap": {
+     "car": 0.47787701460798915,
+     "truck": 0.3895275889343603,
+     "bus": 0.5676204775499228,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.44596045087451497,
+     "motorcycle": 0.2816265477323383,
+     "bicycle": 0.12279155957530133,
+     "traffic_cone": 0.35215897115598016,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.8501575826683355,
+     "scale_err": 0.4724668384406662,
+     "orient_err": 0.7153466325170696,
+     "vel_err": 0.7083347390747696,
+     "attr_err": 0.3067506500038967
+    },
+    "train_NDS": 0.5345837779026141,
+    "published_NDS": 0.354,
+    "published_mAP": 0.252
+   },
+   {
+    "variant": "tiny",
+    "model": "BEVFormer-tiny",
+    "fix": "temporal",
+    "mAP": 0.2673783097619476,
+    "NDS": 0.32994733387798564,
+    "class_ap": {
+     "car": 0.48223895244430526,
+     "truck": 0.4008706217441319,
+     "bus": 0.568664517309456,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.4467173977144986,
+     "motorcycle": 0.2932742224113639,
+     "bicycle": 0.12226723668659754,
+     "traffic_cone": 0.3597501493091228,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.8484903986549159,
+     "scale_err": 0.47037125837072563,
+     "orient_err": 0.7037295773418333,
+     "vel_err": 0.7056077217086767,
+     "attr_err": 0.3092192539537296
+    },
+    "train_NDS": 0.5390693324132387,
+    "published_NDS": 0.354,
+    "published_mAP": 0.252
+   },
+   {
+    "variant": "tiny",
+    "model": "BEVFormer-tiny",
+    "fix": "lidar",
+    "mAP": 0.2687808539559321,
+    "NDS": 0.33086854157426865,
+    "class_ap": {
+     "car": 0.48913498272600003,
+     "truck": 0.3952086353738522,
+     "bus": 0.5702063602725197,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.46234216477056805,
+     "motorcycle": 0.2919423972449601,
+     "bicycle": 0.13451271278909635,
+     "traffic_cone": 0.3444612863823243,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.8370281801036235,
+     "scale_err": 0.471512048297231,
+     "orient_err": 0.7140599036185802,
+     "vel_err": 0.706244571547405,
+     "attr_err": 0.3063741504701343
+    },
+    "train_NDS": 0.5386228571359865,
+    "published_NDS": 0.354,
+    "published_mAP": 0.252
+   },
+   {
+    "variant": "tiny",
+    "model": "BEVFormer-tiny",
+    "fix": "temporal+lidar",
+    "mAP": 0.27184150224617,
+    "NDS": 0.33389908282930303,
+    "class_ap": {
+     "car": 0.4924417808989187,
+     "truck": 0.405959844586641,
+     "bus": 0.5723917092931106,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.4622334000308967,
+     "motorcycle": 0.30093144863322724,
+     "bicycle": 0.13133158598144729,
+     "traffic_cone": 0.3531252530374583,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.8359189635460705,
+     "scale_err": 0.4694141372041406,
+     "orient_err": 0.7013228363999352,
+     "vel_err": 0.7045889905634592,
+     "attr_err": 0.30897175522421416
+    },
+    "train_NDS": 0.542768853294447,
+    "published_NDS": 0.354,
+    "published_mAP": 0.252
+   },
+   {
+    "variant": "small",
+    "model": "BEVFormer-small",
+    "fix": "none",
+    "mAP": 0.3529944722651111,
+    "NDS": 0.3986201628062159,
+    "class_ap": {
+     "car": 0.611249940280868,
+     "truck": 0.361314402960337,
+     "bus": 0.6082863089896529,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.502197417271455,
+     "motorcycle": 0.3788917973180425,
+     "bicycle": 0.41186946229335264,
+     "traffic_cone": 0.6561353935374029,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7391152983956193,
+     "scale_err": 0.46641751388358416,
+     "orient_err": 0.6998533169537269,
+     "vel_err": 0.5755846016390449,
+     "attr_err": 0.29780000239142124
+    },
+    "train_NDS": 0.6440984241441273,
+    "published_NDS": 0.479,
+    "published_mAP": 0.37
+   },
+   {
+    "variant": "small",
+    "model": "BEVFormer-small",
+    "fix": "temporal",
+    "mAP": 0.35500499299071403,
+    "NDS": 0.400843267948941,
+    "class_ap": {
+     "car": 0.6118749927141216,
+     "truck": 0.3656841472971955,
+     "bus": 0.6089562991108673,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.5120768403879208,
+     "motorcycle": 0.3907326528015006,
+     "bicycle": 0.40809589650446887,
+     "traffic_cone": 0.6526291010910656,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7370673999125914,
+     "scale_err": 0.46507362792695606,
+     "orient_err": 0.6841540124520995,
+     "vel_err": 0.5778382649817111,
+     "attr_err": 0.3024589801908024
+    },
+    "train_NDS": 0.6462451811955241,
+    "published_NDS": 0.479,
+    "published_mAP": 0.37
+   },
+   {
+    "variant": "small",
+    "model": "BEVFormer-small",
+    "fix": "lidar",
+    "mAP": 0.35462620607195516,
+    "NDS": 0.4022847559572343,
+    "class_ap": {
+     "car": 0.6175599343536614,
+     "truck": 0.36404747468170684,
+     "bus": 0.6008586806405957,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.5086715476073227,
+     "motorcycle": 0.3909500327394778,
+     "bicycle": 0.41334961995486064,
+     "traffic_cone": 0.6508247707419264,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7277743253911007,
+     "scale_err": 0.46588204931471855,
+     "orient_err": 0.6935807375181153,
+     "vel_err": 0.5660650595939773,
+     "attr_err": 0.2969812989695215
+    },
+    "train_NDS": 0.6478037495814888,
+    "published_NDS": 0.479,
+    "published_mAP": 0.37
+   },
+   {
+    "variant": "small",
+    "model": "BEVFormer-small",
+    "fix": "temporal+lidar",
+    "mAP": 0.3555438001473641,
+    "NDS": 0.40468484958099527,
+    "class_ap": {
+     "car": 0.6165308865595611,
+     "truck": 0.367827872384908,
+     "bus": 0.6015286707618102,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.5150189361775183,
+     "motorcycle": 0.39890782456635926,
+     "bicycle": 0.40857288205411524,
+     "traffic_cone": 0.6470509289693686,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7256219772027156,
+     "scale_err": 0.4644743564553829,
+     "orient_err": 0.6769794137274743,
+     "vel_err": 0.5632660423581519,
+     "attr_err": 0.30052871518314267
+    },
+    "train_NDS": 0.6490710997346952,
+    "published_NDS": 0.479,
+    "published_mAP": 0.37
+   },
+   {
+    "variant": "base",
+    "model": "BEVFormer-base",
+    "fix": "none",
+    "mAP": 0.3689809529343361,
+    "NDS": 0.42141959743852997,
+    "class_ap": {
+     "car": 0.6860937137761529,
+     "truck": 0.6347497262297265,
+     "bus": 0.4981045495558646,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.576790967203171,
+     "motorcycle": 0.47759366342757226,
+     "bicycle": 0.24719821153673094,
+     "traffic_cone": 0.5692786976141432,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7216836738692644,
+     "scale_err": 0.4621312740759519,
+     "orient_err": 0.6095427244947818,
+     "vel_err": 0.5375675170541486,
+     "attr_err": 0.2997836007922333
+    },
+    "train_NDS": 0.698480398859864,
+    "published_NDS": 0.517,
+    "published_mAP": 0.416
+   },
+   {
+    "variant": "base",
+    "model": "BEVFormer-base",
+    "fix": "temporal",
+    "mAP": 0.3736618386380438,
+    "NDS": 0.4244994452716842,
+    "class_ap": {
+     "car": 0.6900452795284722,
+     "truck": 0.63249942500416,
+     "bus": 0.49954890283381115,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.5766955517829309,
+     "motorcycle": 0.48417095080756567,
+     "bicycle": 0.2360883036805608,
+     "traffic_cone": 0.6175699727429371,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7201447501998565,
+     "scale_err": 0.4625959966916495,
+     "orient_err": 0.6065337046703247,
+     "vel_err": 0.5331475624170813,
+     "attr_err": 0.30089272649446464
+    },
+    "train_NDS": 0.7018930618112593,
+    "published_NDS": 0.517,
+    "published_mAP": 0.416
+   },
+   {
+    "variant": "base",
+    "model": "BEVFormer-base",
+    "fix": "lidar",
+    "mAP": 0.36883473592734034,
+    "NDS": 0.42206120546541825,
+    "class_ap": {
+     "car": 0.690630296531351,
+     "truck": 0.640434566237926,
+     "bus": 0.49818436353273743,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.5897755015738955,
+     "motorcycle": 0.48763988631686594,
+     "bicycle": 0.23314959797028478,
+     "traffic_cone": 0.5485331471103425,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7127323941489169,
+     "scale_err": 0.46155355660729275,
+     "orient_err": 0.6105139879577215,
+     "vel_err": 0.5392890598170086,
+     "attr_err": 0.2994726264515791
+    },
+    "train_NDS": 0.7018922389092033,
+    "published_NDS": 0.517,
+    "published_mAP": 0.416
+   },
+   {
+    "variant": "base",
+    "model": "BEVFormer-base",
+    "fix": "temporal+lidar",
+    "mAP": 0.3731220746735975,
+    "NDS": 0.4250050799307048,
+    "class_ap": {
+     "car": 0.6927810500061973,
+     "truck": 0.6385243624827587,
+     "bus": 0.4996287168106839,
+     "trailer": 0.0,
+     "construction_vehicle": 0.0,
+     "pedestrian": 0.590659587638426,
+     "motorcycle": 0.4927874488869538,
+     "bicycle": 0.216890488075644,
+     "traffic_cone": 0.5999490928353113,
+     "barrier": 0.0
+    },
+    "tp_errors": {
+     "trans_err": 0.7095591029994435,
+     "scale_err": 0.46211671213395744,
+     "orient_err": 0.6079570679083363,
+     "vel_err": 0.5351297987221976,
+     "attr_err": 0.3007968922970047
+    },
+    "train_NDS": 0.7050484150772502,
+    "published_NDS": 0.517,
+    "published_mAP": 0.416
+   }
+  ],
+  "temporal_tuning": {
+   "tiny": {
+    "best": {
+     "w": 0.2,
+     "miss_penalty": 0.15
+    },
+    "grid": [
+     {
+      "w": 0.2,
+      "miss_penalty": 0.0,
+      "mAP": 0.45542460498029635,
+      "NDS": 0.5362562323447728
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.15,
+      "mAP": 0.4578627372658926,
+      "NDS": 0.5390693324132387
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.3,
+      "mAP": 0.45752350057085805,
+      "NDS": 0.5388724693841898
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.0,
+      "mAP": 0.45305882500422995,
+      "NDS": 0.5329722585553887
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.15,
+      "mAP": 0.45541913076444385,
+      "NDS": 0.5364739689928516
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.3,
+      "mAP": 0.45477025792075787,
+      "NDS": 0.5366151438460894
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.0,
+      "mAP": 0.4456964163176072,
+      "NDS": 0.5274279136562713
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.15,
+      "mAP": 0.4480429469885953,
+      "NDS": 0.5314848648282321
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.3,
+      "mAP": 0.4473278109761051,
+      "NDS": 0.5315371300403664
+     }
+    ]
+   },
+   "small": {
+    "best": {
+     "w": 0.2,
+     "miss_penalty": 0.3
+    },
+    "grid": [
+     {
+      "w": 0.2,
+      "miss_penalty": 0.0,
+      "mAP": 0.6101103724596685,
+      "NDS": 0.6432310755162709
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.15,
+      "mAP": 0.6128731453937921,
+      "NDS": 0.646044670519532
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.3,
+      "mAP": 0.6125925702269777,
+      "NDS": 0.6462451811955241
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.0,
+      "mAP": 0.6065950571165492,
+      "NDS": 0.640404813289762
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.15,
+      "mAP": 0.609968153306267,
+      "NDS": 0.6444159130310976
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.3,
+      "mAP": 0.6093959077805104,
+      "NDS": 0.6448279020681607
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.0,
+      "mAP": 0.5992945609196095,
+      "NDS": 0.6353028057823125
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.15,
+      "mAP": 0.6029547848584093,
+      "NDS": 0.6402225552084683
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.3,
+      "mAP": 0.6009958014768937,
+      "NDS": 0.6398840212286245
+     }
+    ]
+   },
+   "base": {
+    "best": {
+     "w": 0.2,
+     "miss_penalty": 0.3
+    },
+    "grid": [
+     {
+      "w": 0.2,
+      "miss_penalty": 0.0,
+      "mAP": 0.6530562615164114,
+      "NDS": 0.7006775696713795
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.15,
+      "mAP": 0.6535717647727584,
+      "NDS": 0.7016683454706946
+     },
+     {
+      "w": 0.2,
+      "miss_penalty": 0.3,
+      "mAP": 0.6533834309557127,
+      "NDS": 0.7018930618112593
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.0,
+      "mAP": 0.6479174151288657,
+      "NDS": 0.6988155250207903
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.15,
+      "mAP": 0.6490017786843897,
+      "NDS": 0.7003042645379104
+     },
+     {
+      "w": 0.4,
+      "miss_penalty": 0.3,
+      "mAP": 0.6489388952365546,
+      "NDS": 0.7006189880300173
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.0,
+      "mAP": 0.6366785653777527,
+      "NDS": 0.6920330765636729
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.15,
+      "mAP": 0.6390252118336293,
+      "NDS": 0.6947821319614982
+     },
+     {
+      "w": 0.6,
+      "miss_penalty": 0.3,
+      "mAP": 0.6393059892752524,
+      "NDS": 0.6957253997342283
+     }
+    ]
+   }
+  },
+  "choice_by_train_nds": {
+   "tiny": "temporal+lidar",
+   "small": "temporal+lidar",
+   "base": "temporal+lidar"
+  },
+  "final": {
+   "variant": "base",
+   "fix": "temporal+lidar"
+  }
+ },
+ "timings": {
+  "tiny": {
+   "frames": 404,
+   "median_ms": 107.02039999978297,
+   "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+   "peak_gpu_mem_mb": 625.923828125
+  },
+  "small": {
+   "model": "BEVFormer-small",
+   "frames": 404,
+   "median_ms": 423.79479999999603,
+   "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+   "peak_gpu_mem_mb": 1536.12451171875
+  },
+  "base": {
+   "model": "BEVFormer-base",
+   "frames": 404,
+   "median_ms": 1039.2890000002808,
+   "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+   "peak_gpu_mem_mb": 3072.3603515625
+  }
+ },
+ "improved": {
+  "threshold": 0.33983728289604187,
+  "sets": {
+   "heldout": {
+    "n_frames": 81,
+    "n_gt": 3793,
+    "range_profile": [
+     {
+      "group": "all",
+      "range": "0-10",
+      "n_gt": 362,
+      "recall": 0.9392265193370166,
+      "n_pred": 358,
+      "precision": 0.9357541899441341,
+      "ap": 0.9631102582140432
+     },
+     {
+      "group": "all",
+      "range": "10-20",
+      "n_gt": 1114,
+      "recall": 0.8904847396768402,
+      "n_pred": 1112,
+      "precision": 0.875,
+      "ap": 0.9031205874893321
+     },
+     {
+      "group": "all",
+      "range": "20-30",
+      "n_gt": 1113,
+      "recall": 0.7915543575920935,
+      "n_pred": 1082,
+      "precision": 0.8410351201478743,
+      "ap": 0.8368473581851427
+     },
+     {
+      "group": "all",
+      "range": "30-40",
+      "n_gt": 600,
+      "recall": 0.63,
+      "n_pred": 483,
+      "precision": 0.7577639751552795,
+      "ap": 0.5975698755105582
+     },
+     {
+      "group": "all",
+      "range": "40-50",
+      "n_gt": 328,
+      "recall": 0.3628048780487805,
+      "n_pred": 185,
+      "precision": 0.6972972972972973,
+      "ap": 0.3863500446765551
+     },
+     {
+      "group": "all",
+      "range": "50-60",
+      "n_gt": 154,
+      "recall": 0.03896103896103896,
+      "n_pred": 6,
+      "precision": 0.5,
+      "ap": 0.0008372570590392375
+     },
+     {
+      "group": "all",
+      "range": "60-80",
+      "n_gt": 104,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "all",
+      "range": "80+",
+      "n_gt": 18,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "car",
+      "range": "0-10",
+      "n_gt": 167,
+      "recall": 0.9940119760479041,
+      "n_pred": 166,
+      "precision": 0.9939759036144579,
+      "ap": 0.9887413268700695
+     },
+     {
+      "group": "car",
+      "range": "10-20",
+      "n_gt": 511,
+      "recall": 0.9471624266144814,
+      "n_pred": 508,
+      "precision": 0.9409448818897638,
+      "ap": 0.9490712393292633
+     },
+     {
+      "group": "car",
+      "range": "20-30",
+      "n_gt": 673,
+      "recall": 0.8573551263001485,
+      "n_pred": 648,
+      "precision": 0.9104938271604939,
+      "ap": 0.9262978388313073
+     },
+     {
+      "group": "car",
+      "range": "30-40",
+      "n_gt": 387,
+      "recall": 0.7028423772609819,
+      "n_pred": 324,
+      "precision": 0.8055555555555556,
+      "ap": 0.678665887292932
+     },
+     {
+      "group": "car",
+      "range": "40-50",
+      "n_gt": 183,
+      "recall": 0.4262295081967213,
+      "n_pred": 121,
+      "precision": 0.7024793388429752,
+      "ap": 0.4228358925110637
+     },
+     {
+      "group": "car",
+      "range": "50-60",
+      "n_gt": 69,
+      "recall": 0.07246376811594203,
+      "n_pred": 5,
+      "precision": 0.6,
+      "ap": 0.0
+     },
+     {
+      "group": "car",
+      "range": "60-80",
+      "n_gt": 57,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "car",
+      "range": "80+",
+      "n_gt": 9,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "large_vehicle",
+      "range": "0-10",
+      "n_gt": 8,
+      "recall": 1.0,
+      "n_pred": 8,
+      "precision": 1.0,
+      "ap": 0.994708994708995
+     },
+     {
+      "group": "large_vehicle",
+      "range": "10-20",
+      "n_gt": 45,
+      "recall": 0.9333333333333333,
+      "n_pred": 33,
+      "precision": 1.0,
+      "ap": 0.7000000000000001
+     },
+     {
+      "group": "large_vehicle",
+      "range": "20-30",
+      "n_gt": 35,
+      "recall": 0.8571428571428571,
+      "n_pred": 41,
+      "precision": 0.9512195121951219,
+      "ap": 1.0000000000000004
+     },
+     {
+      "group": "large_vehicle",
+      "range": "30-40",
+      "n_gt": 18,
+      "recall": 0.8888888888888888,
+      "n_pred": 18,
+      "precision": 0.8888888888888888,
+      "ap": 0.8581305374001453
+     },
+     {
+      "group": "large_vehicle",
+      "range": "40-50",
+      "n_gt": 22,
+      "recall": 0.4090909090909091,
+      "n_pred": 12,
+      "precision": 0.75,
+      "ap": 0.438862797325585
+     },
+     {
+      "group": "large_vehicle",
+      "range": "50-60",
+      "n_gt": 19,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.018746673080006417
+     },
+     {
+      "group": "large_vehicle",
+      "range": "60-80",
+      "n_gt": 10,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "large_vehicle",
+      "range": "80+",
+      "n_gt": 6,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "vru",
+      "range": "0-10",
+      "n_gt": 172,
+      "recall": 0.8837209302325582,
+      "n_pred": 163,
+      "precision": 0.9079754601226994,
+      "ap": 0.9193212343499074
+     },
+     {
+      "group": "vru",
+      "range": "10-20",
+      "n_gt": 541,
+      "recall": 0.8391866913123844,
+      "n_pred": 547,
+      "precision": 0.8226691042047533,
+      "ap": 0.8628123855137332
+     },
+     {
+      "group": "vru",
+      "range": "20-30",
+      "n_gt": 401,
+      "recall": 0.6758104738154613,
+      "n_pred": 387,
+      "precision": 0.7209302325581395,
+      "ap": 0.6507300056368575
+     },
+     {
+      "group": "vru",
+      "range": "30-40",
+      "n_gt": 194,
+      "recall": 0.4639175257731959,
+      "n_pred": 140,
+      "precision": 0.6285714285714286,
+      "ap": 0.40533609255476905
+     },
+     {
+      "group": "vru",
+      "range": "40-50",
+      "n_gt": 123,
+      "recall": 0.2601626016260163,
+      "n_pred": 52,
+      "precision": 0.6730769230769231,
+      "ap": 0.324660378860483
+     },
+     {
+      "group": "vru",
+      "range": "50-60",
+      "n_gt": 66,
+      "recall": 0.015151515151515152,
+      "n_pred": 1,
+      "precision": 0.0,
+      "ap": 0.0
+     },
+     {
+      "group": "vru",
+      "range": "60-80",
+      "n_gt": 37,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "vru",
+      "range": "80+",
+      "n_gt": 3,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": null
+     }
+    ],
+    "class_range_recall": [
+     {
+      "cls": "bicycle",
+      "range_bin": "0-10",
+      "size": 4,
+      "mean": 0.75
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "10-20",
+      "size": 11,
+      "mean": 0.7272727273
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "20-30",
+      "size": 16,
+      "mean": 0.75
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "30-40",
+      "size": 5,
+      "mean": 0.2
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "40-50",
+      "size": 2,
+      "mean": 0.0
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "50-60",
+      "size": 2,
+      "mean": 0.0
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "60-80",
+      "size": 4,
+      "mean": 0.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "10-20",
+      "size": 16,
+      "mean": 0.875
+     },
+     {
+      "cls": "bus",
+      "range_bin": "20-30",
+      "size": 9,
+      "mean": 1.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "30-40",
+      "size": 4,
+      "mean": 0.75
+     },
+     {
+      "cls": "bus",
+      "range_bin": "40-50",
+      "size": 4,
+      "mean": 0.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "50-60",
+      "size": 4,
+      "mean": 0.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "60-80",
+      "size": 4,
+      "mean": 0.0
+     },
+     {
+      "cls": "car",
+      "range_bin": "0-10",
+      "size": 167,
+      "mean": 0.994011976
+     },
+     {
+      "cls": "car",
+      "range_bin": "10-20",
+      "size": 511,
+      "mean": 0.9471624266
+     },
+     {
+      "cls": "car",
+      "range_bin": "20-30",
+      "size": 673,
+      "mean": 0.8573551263
+     },
+     {
+      "cls": "car",
+      "range_bin": "30-40",
+      "size": 387,
+      "mean": 0.7028423773
+     },
+     {
+      "cls": "car",
+      "range_bin": "40-50",
+      "size": 183,
+      "mean": 0.4262295082
+     },
+     {
+      "cls": "car",
+      "range_bin": "50-60",
+      "size": 69,
+      "mean": 0.0724637681
+     },
+     {
+      "cls": "car",
+      "range_bin": "60-80",
+      "size": 57,
+      "mean": 0.0
+     },
+     {
+      "cls": "car",
+      "range_bin": "80+",
+      "size": 9,
+      "mean": 0.0
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "0-10",
+      "size": 23,
+      "mean": 0.652173913
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "10-20",
+      "size": 90,
+      "mean": 0.6333333333
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "20-30",
+      "size": 64,
+      "mean": 0.515625
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "30-40",
+      "size": 35,
+      "mean": 0.4571428571
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "40-50",
+      "size": 13,
+      "mean": 0.3076923077
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "50-60",
+      "size": 5,
+      "mean": 0.0
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "60-80",
+      "size": 3,
+      "mean": 0.0
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "0-10",
+      "size": 145,
+      "mean": 0.924137931
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "10-20",
+      "size": 440,
+      "mean": 0.8840909091
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "20-30",
+      "size": 321,
+      "mean": 0.7040498442
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "30-40",
+      "size": 154,
+      "mean": 0.474025974
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "40-50",
+      "size": 108,
+      "mean": 0.2592592593
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "50-60",
+      "size": 59,
+      "mean": 0.0169491525
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "60-80",
+      "size": 30,
+      "mean": 0.0
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "80+",
+      "size": 3,
+      "mean": 0.0
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "0-10",
+      "size": 15,
+      "mean": 0.9333333333
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "10-20",
+      "size": 17,
+      "mean": 0.7058823529
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "20-30",
+      "size": 4,
+      "mean": 0.75
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "30-40",
+      "size": 1,
+      "mean": 0.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "0-10",
+      "size": 8,
+      "mean": 1.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "10-20",
+      "size": 29,
+      "mean": 0.9655172414
+     },
+     {
+      "cls": "truck",
+      "range_bin": "20-30",
+      "size": 26,
+      "mean": 0.8076923077
+     },
+     {
+      "cls": "truck",
+      "range_bin": "30-40",
+      "size": 14,
+      "mean": 0.9285714286
+     },
+     {
+      "cls": "truck",
+      "range_bin": "40-50",
+      "size": 18,
+      "mean": 0.5
+     },
+     {
+      "cls": "truck",
+      "range_bin": "50-60",
+      "size": 15,
+      "mean": 0.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "60-80",
+      "size": 6,
+      "mean": 0.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "80+",
+      "size": 6,
+      "mean": 0.0
+     }
+    ],
+    "size_recall": [
+     {
+      "length_bin": "2-5 m",
+      "n": 1855,
+      "recall": 0.7714285714
+     },
+     {
+      "length_bin": "5-8 m",
+      "n": 323,
+      "recall": 0.7120743034
+     },
+     {
+      "length_bin": ">12 m",
+      "n": 41,
+      "recall": 0.6341463415
+     }
+    ],
+    "size_recall_by_range": [
+     {
+      "length_bin": "2-5 m",
+      "far": "<40 m",
+      "size": 1563,
+      "mean": 0.8656429942
+     },
+     {
+      "length_bin": "2-5 m",
+      "far": ">=40 m",
+      "size": 292,
+      "mean": 0.2671232877
+     },
+     {
+      "length_bin": "5-8 m",
+      "far": "<40 m",
+      "size": 252,
+      "mean": 0.8571428571
+     },
+     {
+      "length_bin": "5-8 m",
+      "far": ">=40 m",
+      "size": 71,
+      "mean": 0.1971830986
+     },
+     {
+      "length_bin": ">12 m",
+      "far": "<40 m",
+      "size": 29,
+      "mean": 0.8965517241
+     },
+     {
+      "length_bin": ">12 m",
+      "far": ">=40 m",
+      "size": 12,
+      "mean": 0.0
+     }
+    ],
+    "visibility_recall": [
+     {
+      "visibility": 1,
+      "n": 856,
+      "recall": 0.5724299065
+     },
+     {
+      "visibility": 2,
+      "n": 433,
+      "recall": 0.7598152425
+     },
+     {
+      "visibility": 3,
+      "n": 649,
+      "recall": 0.8258859784
+     },
+     {
+      "visibility": 4,
+      "n": 1621,
+      "recall": 0.839605182
+     }
+    ],
+    "lighting_range_recall": [
+     {
+      "lighting": "day",
+      "range_bin": "0-10",
+      "size": 362,
+      "mean": 0.9392265193
+     },
+     {
+      "lighting": "day",
+      "range_bin": "10-20",
+      "size": 1114,
+      "mean": 0.8904847397
+     },
+     {
+      "lighting": "day",
+      "range_bin": "20-30",
+      "size": 1113,
+      "mean": 0.7915543576
+     },
+     {
+      "lighting": "day",
+      "range_bin": "30-40",
+      "size": 600,
+      "mean": 0.63
+     },
+     {
+      "lighting": "day",
+      "range_bin": "40-50",
+      "size": 328,
+      "mean": 0.362804878
+     },
+     {
+      "lighting": "day",
+      "range_bin": "50-60",
+      "size": 154,
+      "mean": 0.038961039
+     },
+     {
+      "lighting": "day",
+      "range_bin": "60-80",
+      "size": 104,
+      "mean": 0.0
+     },
+     {
+      "lighting": "day",
+      "range_bin": "80+",
+      "size": 18,
+      "mean": 0.0
+     }
+    ],
+    "tp_errors": [
+     {
+      "group": "car",
+      "range": "0-10",
+      "n": 167,
+      "trans_med": 0.15395130013023772,
+      "trans_p90": 0.29548764833391095,
+      "radial_bias": 0.004124023835500701,
+      "len_err_med": -0.010629741163158358,
+      "yaw_med_deg": 1.7177701618591468
+     },
+     {
+      "group": "car",
+      "range": "10-20",
+      "n": 505,
+      "trans_med": 0.30620166929038284,
+      "trans_p90": 0.9902202490600939,
+      "radial_bias": 0.030103117655258416,
+      "len_err_med": -0.02835169300941402,
+      "yaw_med_deg": 2.469126705471306
+     },
+     {
+      "group": "car",
+      "range": "20-30",
+      "n": 643,
+      "trans_med": 0.5363419786815927,
+      "trans_p90": 1.352163812616507,
+      "radial_bias": 0.06653517415984922,
+      "len_err_med": -0.03455775913100227,
+      "yaw_med_deg": 2.9437925067423345
+     },
+     {
+      "group": "car",
+      "range": "30-40",
+      "n": 343,
+      "trans_med": 0.6502985685091318,
+      "trans_p90": 1.516277292464543,
+      "radial_bias": 0.027969872774882276,
+      "len_err_med": -0.03530966388155066,
+      "yaw_med_deg": 2.8947914982643845
+     },
+     {
+      "group": "car",
+      "range": "40-50",
+      "n": 129,
+      "trans_med": 0.8008211990741838,
+      "trans_p90": 1.726355420030553,
+      "radial_bias": -0.09225019675331225,
+      "len_err_med": -0.0236817586560284,
+      "yaw_med_deg": 3.3137686573999012
+     },
+     {
+      "group": "car",
+      "range": "50-60",
+      "n": 10,
+      "trans_med": 1.2679576957276844,
+      "trans_p90": 1.7814382570609628,
+      "radial_bias": -1.2401966778017623,
+      "len_err_med": -0.05194697027235372,
+      "yaw_med_deg": 6.108527027551368
+     },
+     {
+      "group": "large_vehicle",
+      "range": "0-10",
+      "n": 8,
+      "trans_med": 0.11251826946319093,
+      "trans_p90": 0.22115105261171641,
+      "radial_bias": 0.02186650800196377,
+      "len_err_med": 0.009454335275865988,
+      "yaw_med_deg": 0.6632200639649435
+     },
+     {
+      "group": "large_vehicle",
+      "range": "10-20",
+      "n": 43,
+      "trans_med": 0.44009569458041436,
+      "trans_p90": 1.1688903244587527,
+      "radial_bias": 0.2319245116646016,
+      "len_err_med": 0.008275524583179247,
+      "yaw_med_deg": 3.968157585415055
+     },
+     {
+      "group": "large_vehicle",
+      "range": "20-30",
+      "n": 31,
+      "trans_med": 0.6268220951136824,
+      "trans_p90": 1.238674977929689,
+      "radial_bias": 0.6096324069253107,
+      "len_err_med": 0.024838577505015124,
+      "yaw_med_deg": 2.9601570732090448
+     },
+     {
+      "group": "large_vehicle",
+      "range": "30-40",
+      "n": 16,
+      "trans_med": 0.7825834628777659,
+      "trans_p90": 1.8311705664366351,
+      "radial_bias": 0.014878512655748466,
+      "len_err_med": 0.09327469096756191,
+      "yaw_med_deg": 2.412763716813478
+     },
+     {
+      "group": "large_vehicle",
+      "range": "40-50",
+      "n": 16,
+      "trans_med": 0.7397664545226698,
+      "trans_p90": 1.5503121113952683,
+      "radial_bias": 0.17580629080263677,
+      "len_err_med": 0.04906825527219287,
+      "yaw_med_deg": 2.9464402450022127
+     },
+     {
+      "group": "large_vehicle",
+      "range": "50-60",
+      "n": 4,
+      "trans_med": 1.3231504801893048,
+      "trans_p90": 1.5395929283946692,
+      "radial_bias": -1.0311119590804196,
+      "len_err_med": -0.07026325504146956,
+      "yaw_med_deg": 11.223253640132151
+     },
+     {
+      "group": "vru",
+      "range": "0-10",
+      "n": 170,
+      "trans_med": 0.5262075491783411,
+      "trans_p90": 1.2916599080632354,
+      "radial_bias": 0.12756343384255464,
+      "len_err_med": 0.04740961197717919,
+      "yaw_med_deg": 9.944471323343597
+     },
+     {
+      "group": "vru",
+      "range": "10-20",
+      "n": 524,
+      "trans_med": 0.6478927596815333,
+      "trans_p90": 1.4318652902466,
+      "radial_bias": 0.1722665152217262,
+      "len_err_med": 0.00698933865015324,
+      "yaw_med_deg": 9.942977198573512
+     },
+     {
+      "group": "vru",
+      "range": "20-30",
+      "n": 342,
+      "trans_med": 0.7103442989035965,
+      "trans_p90": 1.5541006455487534,
+      "radial_bias": 0.07333759407618601,
+      "len_err_med": 0.03019452906497718,
+      "yaw_med_deg": 13.474871499656718
+     },
+     {
+      "group": "vru",
+      "range": "30-40",
+      "n": 142,
+      "trans_med": 0.7655686729226591,
+      "trans_p90": 1.5005675197397803,
+      "radial_bias": 0.187311899762042,
+      "len_err_med": 0.028125015743504705,
+      "yaw_med_deg": 9.389726319536015
+     },
+     {
+      "group": "vru",
+      "range": "40-50",
+      "n": 77,
+      "trans_med": 0.7017579641691692,
+      "trans_p90": 1.582101132253911,
+      "radial_bias": 0.03147381231731572,
+      "len_err_med": 0.07044764973606846,
+      "yaw_med_deg": 12.26757439434634
+     },
+     {
+      "group": "vru",
+      "range": "50-60",
+      "n": 8,
+      "trans_med": 1.0586504259443572,
+      "trans_p90": 1.5410323133502666,
+      "radial_bias": -0.4473123162035506,
+      "len_err_med": 0.1354706100820207,
+      "yaw_med_deg": 89.36315682541832
+     }
+    ],
+    "fn_tags": [
+     {
+      "range_bin": "0-10",
+      "fail_tag": "depth_error",
+      "n": 1
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "heavily_occluded",
+      "n": 1
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "low_confidence",
+      "n": 20
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "depth_error",
+      "n": 14
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "heavily_occluded",
+      "n": 6
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "low_confidence",
+      "n": 97
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "missed",
+      "n": 5
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "depth_error",
+      "n": 29
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "heavily_occluded",
+      "n": 36
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "low_confidence",
+      "n": 139
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "missed",
+      "n": 28
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "depth_error",
+      "n": 31
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "heavily_occluded",
+      "n": 25
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "low_confidence",
+      "n": 124
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "missed",
+      "n": 42
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "depth_error",
+      "n": 14
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "heavily_occluded",
+      "n": 33
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "low_confidence",
+      "n": 103
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "missed",
+      "n": 59
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "beyond_bev_grid",
+      "n": 114
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "depth_error",
+      "n": 2
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "heavily_occluded",
+      "n": 8
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "low_confidence",
+      "n": 15
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "missed",
+      "n": 9
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "beyond_bev_grid",
+      "n": 102
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "missed",
+      "n": 2
+     },
+     {
+      "range_bin": "80+",
+      "fail_tag": "beyond_bev_grid",
+      "n": 18
+     }
+    ],
+    "fn_tags_large": [
+     {
+      "fail_tag": "beyond_bev_grid",
+      "n": 27
+     },
+     {
+      "fail_tag": "depth_error",
+      "n": 4
+     },
+     {
+      "fail_tag": "heavily_occluded",
+      "n": 7
+     },
+     {
+      "fail_tag": "low_confidence",
+      "n": 13
+     },
+     {
+      "fail_tag": "missed",
+      "n": 7
+     }
+    ],
+    "fp_tags": [
+     {
+      "range_bin": "0-10",
+      "fail_tag": "class_confusion",
+      "n": 1
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "duplicate",
+      "n": 16
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "ghost_no_lidar",
+      "n": 6
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "depth_error",
+      "n": 23
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "duplicate",
+      "n": 87
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "ghost_no_lidar",
+      "n": 17
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "ghost_with_lidar",
+      "n": 12
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "class_confusion",
+      "n": 2
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "depth_error",
+      "n": 60
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "duplicate",
+      "n": 61
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "ghost_no_lidar",
+      "n": 17
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "ghost_with_lidar",
+      "n": 32
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "class_confusion",
+      "n": 1
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "depth_error",
+      "n": 54
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "duplicate",
+      "n": 20
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "ghost_no_lidar",
+      "n": 24
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "ghost_with_lidar",
+      "n": 18
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "class_confusion",
+      "n": 3
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "depth_error",
+      "n": 12
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "duplicate",
+      "n": 9
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "ghost_no_lidar",
+      "n": 16
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "ghost_with_lidar",
+      "n": 16
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "depth_error",
+      "n": 1
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "ghost_no_lidar",
+      "n": 2
+     }
+    ],
+    "worst_cases": [
+     251,
+     44,
+     62,
+     244
+    ],
+    "operating_point": {
+     "tp": 2716,
+     "fp": 510,
+     "fn": 1077,
+     "precision": 0.8419094854308742,
+     "recall": 0.71605589243343,
+     "f1": 0.7738994158712068
+    }
+   },
+   "all_mini": {
+    "n_frames": 404,
+    "n_gt": 14914,
+    "range_profile": [
+     {
+      "group": "all",
+      "range": "0-10",
+      "n_gt": 1441,
+      "recall": 0.9278278972935462,
+      "n_pred": 1459,
+      "precision": 0.912268677176148,
+      "ap": 0.9115394246799359
+     },
+     {
+      "group": "all",
+      "range": "10-20",
+      "n_gt": 3959,
+      "recall": 0.8888608234402627,
+      "n_pred": 3904,
+      "precision": 0.8985655737704918,
+      "ap": 0.8969990993872121
+     },
+     {
+      "group": "all",
+      "range": "20-30",
+      "n_gt": 3703,
+      "recall": 0.8368890089116933,
+      "n_pred": 3615,
+      "precision": 0.8680497925311204,
+      "ap": 0.8754073046852271
+     },
+     {
+      "group": "all",
+      "range": "30-40",
+      "n_gt": 2354,
+      "recall": 0.7175021240441801,
+      "n_pred": 1972,
+      "precision": 0.8488843813387424,
+      "ap": 0.7490493846072114
+     },
+     {
+      "group": "all",
+      "range": "40-50",
+      "n_gt": 1479,
+      "recall": 0.555104800540906,
+      "n_pred": 1051,
+      "precision": 0.7916270218839201,
+      "ap": 0.5743583028699188
+     },
+     {
+      "group": "all",
+      "range": "50-60",
+      "n_gt": 998,
+      "recall": 0.19438877755511022,
+      "n_pred": 232,
+      "precision": 0.7543103448275862,
+      "ap": 0.1403775154844486
+     },
+     {
+      "group": "all",
+      "range": "60-80",
+      "n_gt": 745,
+      "recall": 0.010738255033557046,
+      "n_pred": 10,
+      "precision": 0.9,
+      "ap": 0.0
+     },
+     {
+      "group": "all",
+      "range": "80+",
+      "n_gt": 235,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "car",
+      "range": "0-10",
+      "n_gt": 490,
+      "recall": 0.9122448979591836,
+      "n_pred": 454,
+      "precision": 0.9955947136563876,
+      "ap": 0.9559642881884514
+     },
+     {
+      "group": "car",
+      "range": "10-20",
+      "n_gt": 1233,
+      "recall": 0.935117599351176,
+      "n_pred": 1178,
+      "precision": 0.9634974533106961,
+      "ap": 0.9199853719143269
+     },
+     {
+      "group": "car",
+      "range": "20-30",
+      "n_gt": 1643,
+      "recall": 0.9001825928180158,
+      "n_pred": 1598,
+      "precision": 0.9455569461827285,
+      "ap": 0.9500604449600735
+     },
+     {
+      "group": "car",
+      "range": "30-40",
+      "n_gt": 1116,
+      "recall": 0.7876344086021505,
+      "n_pred": 977,
+      "precision": 0.8935516888433982,
+      "ap": 0.8186555407248411
+     },
+     {
+      "group": "car",
+      "range": "40-50",
+      "n_gt": 643,
+      "recall": 0.5769828926905132,
+      "n_pred": 442,
+      "precision": 0.834841628959276,
+      "ap": 0.5895404683871958
+     },
+     {
+      "group": "car",
+      "range": "50-60",
+      "n_gt": 499,
+      "recall": 0.1963927855711423,
+      "n_pred": 112,
+      "precision": 0.7678571428571429,
+      "ap": 0.13623298016086313
+     },
+     {
+      "group": "car",
+      "range": "60-80",
+      "n_gt": 391,
+      "recall": 0.017902813299232736,
+      "n_pred": 9,
+      "precision": 0.8888888888888888,
+      "ap": 0.0
+     },
+     {
+      "group": "car",
+      "range": "80+",
+      "n_gt": 123,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "large_vehicle",
+      "range": "0-10",
+      "n_gt": 110,
+      "recall": 1.0,
+      "n_pred": 155,
+      "precision": 0.7225806451612903,
+      "ap": 0.7459198556123479
+     },
+     {
+      "group": "large_vehicle",
+      "range": "10-20",
+      "n_gt": 240,
+      "recall": 0.8041666666666667,
+      "n_pred": 227,
+      "precision": 0.8149779735682819,
+      "ap": 0.582181517728966
+     },
+     {
+      "group": "large_vehicle",
+      "range": "20-30",
+      "n_gt": 217,
+      "recall": 0.9354838709677419,
+      "n_pred": 221,
+      "precision": 0.9502262443438914,
+      "ap": 0.9822711236803732
+     },
+     {
+      "group": "large_vehicle",
+      "range": "30-40",
+      "n_gt": 152,
+      "recall": 0.8355263157894737,
+      "n_pred": 143,
+      "precision": 0.9020979020979021,
+      "ap": 0.863502489722384
+     },
+     {
+      "group": "large_vehicle",
+      "range": "40-50",
+      "n_gt": 142,
+      "recall": 0.6056338028169014,
+      "n_pred": 118,
+      "precision": 0.7372881355932204,
+      "ap": 0.5747121491993875
+     },
+     {
+      "group": "large_vehicle",
+      "range": "50-60",
+      "n_gt": 110,
+      "recall": 0.2545454545454545,
+      "n_pred": 35,
+      "precision": 0.6857142857142857,
+      "ap": 0.1403114472187813
+     },
+     {
+      "group": "large_vehicle",
+      "range": "60-80",
+      "n_gt": 121,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "large_vehicle",
+      "range": "80+",
+      "n_gt": 92,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "vru",
+      "range": "0-10",
+      "n_gt": 522,
+      "recall": 0.9042145593869731,
+      "n_pred": 495,
+      "precision": 0.9111111111111111,
+      "ap": 0.902878472892255
+     },
+     {
+      "group": "vru",
+      "range": "10-20",
+      "n_gt": 1475,
+      "recall": 0.8745762711864407,
+      "n_pred": 1498,
+      "precision": 0.8751668891855807,
+      "ap": 0.9225769069124307
+     },
+     {
+      "group": "vru",
+      "range": "20-30",
+      "n_gt": 1345,
+      "recall": 0.7486988847583643,
+      "n_pred": 1258,
+      "precision": 0.7996820349761526,
+      "ap": 0.7588856182890802
+     },
+     {
+      "group": "vru",
+      "range": "30-40",
+      "n_gt": 725,
+      "recall": 0.5958620689655172,
+      "n_pred": 560,
+      "precision": 0.7678571428571429,
+      "ap": 0.627846149855312
+     },
+     {
+      "group": "vru",
+      "range": "40-50",
+      "n_gt": 429,
+      "recall": 0.4195804195804196,
+      "n_pred": 245,
+      "precision": 0.7591836734693878,
+      "ap": 0.47079630500520087
+     },
+     {
+      "group": "vru",
+      "range": "50-60",
+      "n_gt": 246,
+      "recall": 0.08130081300813008,
+      "n_pred": 20,
+      "precision": 0.85,
+      "ap": 0.03228083880826983
+     },
+     {
+      "group": "vru",
+      "range": "60-80",
+      "n_gt": 170,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     },
+     {
+      "group": "vru",
+      "range": "80+",
+      "n_gt": 19,
+      "recall": 0.0,
+      "n_pred": 0,
+      "precision": null,
+      "ap": 0.0
+     }
+    ],
+    "class_range_recall": [
+     {
+      "cls": "barrier",
+      "range_bin": "0-10",
+      "size": 121,
+      "mean": 0.9421487603
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "10-20",
+      "size": 659,
+      "mean": 0.8512898331
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "20-30",
+      "size": 363,
+      "mean": 0.8870523416
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "30-40",
+      "size": 298,
+      "mean": 0.744966443
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "40-50",
+      "size": 224,
+      "mean": 0.7901785714
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "50-60",
+      "size": 129,
+      "mean": 0.3720930233
+     },
+     {
+      "cls": "barrier",
+      "range_bin": "60-80",
+      "size": 57,
+      "mean": 0.0175438596
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "0-10",
+      "size": 4,
+      "mean": 0.75
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "10-20",
+      "size": 43,
+      "mean": 0.9069767442
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "20-30",
+      "size": 82,
+      "mean": 0.7804878049
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "30-40",
+      "size": 33,
+      "mean": 0.4242424242
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "40-50",
+      "size": 15,
+      "mean": 0.3333333333
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "50-60",
+      "size": 8,
+      "mean": 0.0
+     },
+     {
+      "cls": "bicycle",
+      "range_bin": "60-80",
+      "size": 6,
+      "mean": 0.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "0-10",
+      "size": 8,
+      "mean": 1.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "10-20",
+      "size": 37,
+      "mean": 0.9459459459
+     },
+     {
+      "cls": "bus",
+      "range_bin": "20-30",
+      "size": 82,
+      "mean": 0.9390243902
+     },
+     {
+      "cls": "bus",
+      "range_bin": "30-40",
+      "size": 54,
+      "mean": 0.8518518519
+     },
+     {
+      "cls": "bus",
+      "range_bin": "40-50",
+      "size": 45,
+      "mean": 0.4444444444
+     },
+     {
+      "cls": "bus",
+      "range_bin": "50-60",
+      "size": 39,
+      "mean": 0.2307692308
+     },
+     {
+      "cls": "bus",
+      "range_bin": "60-80",
+      "size": 59,
+      "mean": 0.0
+     },
+     {
+      "cls": "bus",
+      "range_bin": "80+",
+      "size": 54,
+      "mean": 0.0
+     },
+     {
+      "cls": "car",
+      "range_bin": "0-10",
+      "size": 490,
+      "mean": 0.912244898
+     },
+     {
+      "cls": "car",
+      "range_bin": "10-20",
+      "size": 1233,
+      "mean": 0.9351175994
+     },
+     {
+      "cls": "car",
+      "range_bin": "20-30",
+      "size": 1643,
+      "mean": 0.9001825928
+     },
+     {
+      "cls": "car",
+      "range_bin": "30-40",
+      "size": 1116,
+      "mean": 0.7876344086
+     },
+     {
+      "cls": "car",
+      "range_bin": "40-50",
+      "size": 643,
+      "mean": 0.5769828927
+     },
+     {
+      "cls": "car",
+      "range_bin": "50-60",
+      "size": 499,
+      "mean": 0.1963927856
+     },
+     {
+      "cls": "car",
+      "range_bin": "60-80",
+      "size": 391,
+      "mean": 0.0179028133
+     },
+     {
+      "cls": "car",
+      "range_bin": "80+",
+      "size": 123,
+      "mean": 0.0
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "0-10",
+      "size": 21,
+      "mean": 1.0
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "10-20",
+      "size": 61,
+      "mean": 0.9508196721
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "20-30",
+      "size": 16,
+      "mean": 1.0
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "30-40",
+      "size": 13,
+      "mean": 1.0
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "40-50",
+      "size": 20,
+      "mean": 0.8
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "50-60",
+      "size": 13,
+      "mean": 0.2307692308
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "60-80",
+      "size": 15,
+      "mean": 0.0
+     },
+     {
+      "cls": "construction_vehicle",
+      "range_bin": "80+",
+      "size": 15,
+      "mean": 0.0
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "0-10",
+      "size": 40,
+      "mean": 0.8
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "10-20",
+      "size": 153,
+      "mean": 0.7450980392
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "20-30",
+      "size": 91,
+      "mean": 0.6043956044
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "30-40",
+      "size": 56,
+      "mean": 0.5178571429
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "40-50",
+      "size": 42,
+      "mean": 0.380952381
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "50-60",
+      "size": 19,
+      "mean": 0.0526315789
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "60-80",
+      "size": 10,
+      "mean": 0.0
+     },
+     {
+      "cls": "motorcycle",
+      "range_bin": "80+",
+      "size": 1,
+      "mean": 0.0
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "0-10",
+      "size": 478,
+      "mean": 0.9142259414
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "10-20",
+      "size": 1279,
+      "mean": 0.8889757623
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "20-30",
+      "size": 1172,
+      "mean": 0.7576791809
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "30-40",
+      "size": 636,
+      "mean": 0.6116352201
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "40-50",
+      "size": 372,
+      "mean": 0.4274193548
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "50-60",
+      "size": 219,
+      "mean": 0.0867579909
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "60-80",
+      "size": 154,
+      "mean": 0.0
+     },
+     {
+      "cls": "pedestrian",
+      "range_bin": "80+",
+      "size": 18,
+      "mean": 0.0
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "0-10",
+      "size": 198,
+      "mean": 0.9797979798
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "10-20",
+      "size": 352,
+      "mean": 0.9147727273
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "20-30",
+      "size": 135,
+      "mean": 0.6518518519
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "30-40",
+      "size": 63,
+      "mean": 0.4603174603
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "40-50",
+      "size": 41,
+      "mean": 0.1707317073
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "50-60",
+      "size": 14,
+      "mean": 0.0
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "60-80",
+      "size": 6,
+      "mean": 0.0
+     },
+     {
+      "cls": "traffic_cone",
+      "range_bin": "80+",
+      "size": 1,
+      "mean": 0.0
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "10-20",
+      "size": 44,
+      "mean": 0.0681818182
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "20-30",
+      "size": 2,
+      "mean": 1.0
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "30-40",
+      "size": 3,
+      "mean": 1.0
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "40-50",
+      "size": 2,
+      "mean": 0.5
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "50-60",
+      "size": 2,
+      "mean": 0.0
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "60-80",
+      "size": 5,
+      "mean": 0.0
+     },
+     {
+      "cls": "trailer",
+      "range_bin": "80+",
+      "size": 1,
+      "mean": 0.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "0-10",
+      "size": 81,
+      "mean": 1.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "10-20",
+      "size": 98,
+      "mean": 0.9897959184
+     },
+     {
+      "cls": "truck",
+      "range_bin": "20-30",
+      "size": 117,
+      "mean": 0.9230769231
+     },
+     {
+      "cls": "truck",
+      "range_bin": "30-40",
+      "size": 82,
+      "mean": 0.7926829268
+     },
+     {
+      "cls": "truck",
+      "range_bin": "40-50",
+      "size": 75,
+      "mean": 0.6533333333
+     },
+     {
+      "cls": "truck",
+      "range_bin": "50-60",
+      "size": 56,
+      "mean": 0.2857142857
+     },
+     {
+      "cls": "truck",
+      "range_bin": "60-80",
+      "size": 42,
+      "mean": 0.0
+     },
+     {
+      "cls": "truck",
+      "range_bin": "80+",
+      "size": 22,
+      "mean": 0.0
+     }
+    ],
+    "size_recall": [
+     {
+      "length_bin": "<2 m",
+      "n": 18,
+      "recall": 0.5
+     },
+     {
+      "length_bin": "2-5 m",
+      "n": 5651,
+      "recall": 0.7253583437
+     },
+     {
+      "length_bin": "5-8 m",
+      "n": 1157,
+      "recall": 0.6862575627
+     },
+     {
+      "length_bin": "8-12 m",
+      "n": 273,
+      "recall": 0.7032967033
+     },
+     {
+      "length_bin": ">12 m",
+      "n": 223,
+      "recall": 0.3901345291
+     }
+    ],
+    "size_recall_by_range": [
+     {
+      "length_bin": "<2 m",
+      "far": "<40 m",
+      "size": 8,
+      "mean": 1.0
+     },
+     {
+      "length_bin": "<2 m",
+      "far": ">=40 m",
+      "size": 10,
+      "mean": 0.1
+     },
+     {
+      "length_bin": "2-5 m",
+      "far": "<40 m",
+      "size": 4153,
+      "mean": 0.8815314231
+     },
+     {
+      "length_bin": "2-5 m",
+      "far": ">=40 m",
+      "size": 1498,
+      "mean": 0.2923898531
+     },
+     {
+      "length_bin": "5-8 m",
+      "far": "<40 m",
+      "size": 751,
+      "mean": 0.9081225033
+     },
+     {
+      "length_bin": "5-8 m",
+      "far": ">=40 m",
+      "size": 406,
+      "mean": 0.275862069
+     },
+     {
+      "length_bin": "8-12 m",
+      "far": "<40 m",
+      "size": 174,
+      "mean": 0.9770114943
+     },
+     {
+      "length_bin": "8-12 m",
+      "far": ">=40 m",
+      "size": 99,
+      "mean": 0.2222222222
+     },
+     {
+      "length_bin": ">12 m",
+      "far": "<40 m",
+      "size": 115,
+      "mean": 0.6086956522
+     },
+     {
+      "length_bin": ">12 m",
+      "far": ">=40 m",
+      "size": 108,
+      "mean": 0.1574074074
+     }
+    ],
+    "visibility_recall": [
+     {
+      "visibility": 1,
+      "n": 2960,
+      "recall": 0.6168918919
+     },
+     {
+      "visibility": 2,
+      "n": 1186,
+      "recall": 0.7774030354
+     },
+     {
+      "visibility": 3,
+      "n": 1569,
+      "recall": 0.8024219248
+     },
+     {
+      "visibility": 4,
+      "n": 7730,
+      "recall": 0.8611901682
+     }
+    ],
+    "lighting_range_recall": [
+     {
+      "lighting": "day",
+      "range_bin": "0-10",
+      "size": 1197,
+      "mean": 0.9214703425
+     },
+     {
+      "lighting": "day",
+      "range_bin": "10-20",
+      "size": 3161,
+      "mean": 0.8718759886
+     },
+     {
+      "lighting": "day",
+      "range_bin": "20-30",
+      "size": 2810,
+      "mean": 0.8238434164
+     },
+     {
+      "lighting": "day",
+      "range_bin": "30-40",
+      "size": 1817,
+      "mean": 0.6989543203
+     },
+     {
+      "lighting": "day",
+      "range_bin": "40-50",
+      "size": 1192,
+      "mean": 0.5318791946
+     },
+     {
+      "lighting": "day",
+      "range_bin": "50-60",
+      "size": 826,
+      "mean": 0.1755447942
+     },
+     {
+      "lighting": "day",
+      "range_bin": "60-80",
+      "size": 603,
+      "mean": 0.0033167496
+     },
+     {
+      "lighting": "day",
+      "range_bin": "80+",
+      "size": 179,
+      "mean": 0.0
+     },
+     {
+      "lighting": "night",
+      "range_bin": "0-10",
+      "size": 244,
+      "mean": 0.9590163934
+     },
+     {
+      "lighting": "night",
+      "range_bin": "10-20",
+      "size": 798,
+      "mean": 0.9561403509
+     },
+     {
+      "lighting": "night",
+      "range_bin": "20-30",
+      "size": 893,
+      "mean": 0.8779395297
+     },
+     {
+      "lighting": "night",
+      "range_bin": "30-40",
+      "size": 537,
+      "mean": 0.7802607076
+     },
+     {
+      "lighting": "night",
+      "range_bin": "40-50",
+      "size": 287,
+      "mean": 0.6515679443
+     },
+     {
+      "lighting": "night",
+      "range_bin": "50-60",
+      "size": 172,
+      "mean": 0.2848837209
+     },
+     {
+      "lighting": "night",
+      "range_bin": "60-80",
+      "size": 142,
+      "mean": 0.0422535211
+     },
+     {
+      "lighting": "night",
+      "range_bin": "80+",
+      "size": 56,
+      "mean": 0.0
+     }
+    ],
+    "tp_errors": [
+     {
+      "group": "car",
+      "range": "0-10",
+      "n": 483,
+      "trans_med": 0.15585864819694986,
+      "trans_p90": 0.2758101267715275,
+      "radial_bias": 0.0002126095353709445,
+      "len_err_med": 0.009148927982750703,
+      "yaw_med_deg": 1.5135160139280481
+     },
+     {
+      "group": "car",
+      "range": "10-20",
+      "n": 1180,
+      "trans_med": 0.24441874131942048,
+      "trans_p90": 0.7817849557525127,
+      "radial_bias": 0.028232899317568894,
+      "len_err_med": -0.002509805905426459,
+      "yaw_med_deg": 1.9402861142055687
+     },
+     {
+      "group": "car",
+      "range": "20-30",
+      "n": 1573,
+      "trans_med": 0.37710526919318316,
+      "trans_p90": 1.0812671522195179,
+      "radial_bias": 0.030959281396228278,
+      "len_err_med": 0.0012461532945461761,
+      "yaw_med_deg": 2.2272845327961006
+     },
+     {
+      "group": "car",
+      "range": "30-40",
+      "n": 1013,
+      "trans_med": 0.5531940156043217,
+      "trans_p90": 1.3700515503257173,
+      "radial_bias": -0.08650717105575723,
+      "len_err_med": -0.00017375268306825392,
+      "yaw_med_deg": 2.299738172748384
+     },
+     {
+      "group": "car",
+      "range": "40-50",
+      "n": 499,
+      "trans_med": 0.6104300247831129,
+      "trans_p90": 1.5456526173784932,
+      "radial_bias": -0.1470854854159498,
+      "len_err_med": 0.004121975197668948,
+      "yaw_med_deg": 2.332080431158245
+     },
+     {
+      "group": "car",
+      "range": "50-60",
+      "n": 164,
+      "trans_med": 0.9043059561687861,
+      "trans_p90": 1.7364168627483534,
+      "radial_bias": -0.6609701559698209,
+      "len_err_med": 0.017449046834376987,
+      "yaw_med_deg": 3.2695164245784096
+     },
+     {
+      "group": "car",
+      "range": "60+",
+      "n": 9,
+      "trans_med": 0.7752862872132728,
+      "trans_p90": 1.1916753413675525,
+      "radial_bias": -0.28754257868403954,
+      "len_err_med": -0.028034179169651653,
+      "yaw_med_deg": 7.662530884474508
+     },
+     {
+      "group": "large_vehicle",
+      "range": "0-10",
+      "n": 110,
+      "trans_med": 0.171280039972173,
+      "trans_p90": 0.523131269660304,
+      "radial_bias": 0.10753351868244909,
+      "len_err_med": 0.006608218855484856,
+      "yaw_med_deg": 1.8229426197426246
+     },
+     {
+      "group": "large_vehicle",
+      "range": "10-20",
+      "n": 195,
+      "trans_med": 0.36607597181571233,
+      "trans_p90": 0.8839594028417966,
+      "radial_bias": -0.01111931642584807,
+      "len_err_med": 0.024516623906573713,
+      "yaw_med_deg": 2.7497435925586937
+     },
+     {
+      "group": "large_vehicle",
+      "range": "20-30",
+      "n": 210,
+      "trans_med": 0.5380446607100804,
+      "trans_p90": 1.1904056966948242,
+      "radial_bias": 0.17171515613720878,
+      "len_err_med": 0.029079973786779546,
+      "yaw_med_deg": 1.7702231716208052
+     },
+     {
+      "group": "large_vehicle",
+      "range": "30-40",
+      "n": 143,
+      "trans_med": 0.5654746070331936,
+      "trans_p90": 1.5336349118479382,
+      "radial_bias": -0.04096834394286475,
+      "len_err_med": 0.028268101393883315,
+      "yaw_med_deg": 2.7727322451188807
+     },
+     {
+      "group": "large_vehicle",
+      "range": "40-50",
+      "n": 119,
+      "trans_med": 0.8300278681677438,
+      "trans_p90": 1.5797837900803695,
+      "radial_bias": -0.3528046344581952,
+      "len_err_med": 0.016422483786318234,
+      "yaw_med_deg": 3.75574242630967
+     },
+     {
+      "group": "large_vehicle",
+      "range": "50-60",
+      "n": 43,
+      "trans_med": 1.1207776766307378,
+      "trans_p90": 1.7304064279926303,
+      "radial_bias": -0.5162358082996761,
+      "len_err_med": 0.04780981834078475,
+      "yaw_med_deg": 4.2957962144534845
+     },
+     {
+      "group": "vru",
+      "range": "0-10",
+      "n": 516,
+      "trans_med": 0.37880527233881656,
+      "trans_p90": 1.1306240264719085,
+      "radial_bias": 0.09779092665094358,
+      "len_err_med": 0.03818480726656146,
+      "yaw_med_deg": 8.297041717987799
+     },
+     {
+      "group": "vru",
+      "range": "10-20",
+      "n": 1441,
+      "trans_med": 0.4844320031292015,
+      "trans_p90": 1.3383702348280047,
+      "radial_bias": 0.03814903092981403,
+      "len_err_med": 0.0036410956547178763,
+      "yaw_med_deg": 9.112656631104398
+     },
+     {
+      "group": "vru",
+      "range": "20-30",
+      "n": 1220,
+      "trans_med": 0.6090377040265995,
+      "trans_p90": 1.4500980410456132,
+      "radial_bias": -0.0006443843608661126,
+      "len_err_med": 0.017711257173095463,
+      "yaw_med_deg": 8.634151218066753
+     },
+     {
+      "group": "vru",
+      "range": "30-40",
+      "n": 616,
+      "trans_med": 0.6721309877585653,
+      "trans_p90": 1.494208153024136,
+      "radial_bias": 0.04476993394035489,
+      "len_err_med": 0.01160360089793828,
+      "yaw_med_deg": 7.000084770609812
+     },
+     {
+      "group": "vru",
+      "range": "40-50",
+      "n": 307,
+      "trans_med": 0.7409843220111698,
+      "trans_p90": 1.5665482549747136,
+      "radial_bias": 0.10405579350059213,
+      "len_err_med": 0.005315987760035657,
+      "yaw_med_deg": 8.013952590126287
+     },
+     {
+      "group": "vru",
+      "range": "50-60",
+      "n": 57,
+      "trans_med": 0.8642785070609192,
+      "trans_p90": 1.7501536440152634,
+      "radial_bias": -0.41543375873014554,
+      "len_err_med": -0.041446790038815386,
+      "yaw_med_deg": 7.547621441452106
+     }
+    ],
+    "fn_tags": [
+     {
+      "range_bin": "0-10",
+      "fail_tag": "class_confusion",
+      "n": 12
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "depth_error",
+      "n": 1
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "heavily_occluded",
+      "n": 1
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "low_confidence",
+      "n": 90
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "class_confusion",
+      "n": 18
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "depth_error",
+      "n": 76
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "heavily_occluded",
+      "n": 54
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "low_confidence",
+      "n": 285
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "missed",
+      "n": 7
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "class_confusion",
+      "n": 12
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "depth_error",
+      "n": 90
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "heavily_occluded",
+      "n": 84
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "low_confidence",
+      "n": 376
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "missed",
+      "n": 42
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "class_confusion",
+      "n": 9
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "depth_error",
+      "n": 93
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "heavily_occluded",
+      "n": 63
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "low_confidence",
+      "n": 372
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "missed",
+      "n": 128
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "class_confusion",
+      "n": 9
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "depth_error",
+      "n": 84
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "heavily_occluded",
+      "n": 99
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "low_confidence",
+      "n": 330
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "missed",
+      "n": 136
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "beyond_bev_grid",
+      "n": 514
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "class_confusion",
+      "n": 3
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "depth_error",
+      "n": 27
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "heavily_occluded",
+      "n": 41
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "low_confidence",
+      "n": 126
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "missed",
+      "n": 93
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "beyond_bev_grid",
+      "n": 717
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "depth_error",
+      "n": 3
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "heavily_occluded",
+      "n": 3
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "low_confidence",
+      "n": 4
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "missed",
+      "n": 10
+     },
+     {
+      "range_bin": "80+",
+      "fail_tag": "beyond_bev_grid",
+      "n": 235
+     }
+    ],
+    "fn_tags_large": [
+     {
+      "fail_tag": "beyond_bev_grid",
+      "n": 265
+     },
+     {
+      "fail_tag": "class_confusion",
+      "n": 2
+     },
+     {
+      "fail_tag": "depth_error",
+      "n": 58
+     },
+     {
+      "fail_tag": "heavily_occluded",
+      "n": 22
+     },
+     {
+      "fail_tag": "low_confidence",
+      "n": 72
+     },
+     {
+      "fail_tag": "missed",
+      "n": 18
+     }
+    ],
+    "fp_tags": [
+     {
+      "range_bin": "0-10",
+      "fail_tag": "class_confusion",
+      "n": 42
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "depth_error",
+      "n": 2
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "duplicate",
+      "n": 66
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "ghost_no_lidar",
+      "n": 7
+     },
+     {
+      "range_bin": "0-10",
+      "fail_tag": "ghost_with_lidar",
+      "n": 11
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "class_confusion",
+      "n": 5
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "depth_error",
+      "n": 80
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "duplicate",
+      "n": 250
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "ghost_no_lidar",
+      "n": 30
+     },
+     {
+      "range_bin": "10-20",
+      "fail_tag": "ghost_with_lidar",
+      "n": 31
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "class_confusion",
+      "n": 12
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "depth_error",
+      "n": 100
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "duplicate",
+      "n": 269
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "ghost_no_lidar",
+      "n": 41
+     },
+     {
+      "range_bin": "20-30",
+      "fail_tag": "ghost_with_lidar",
+      "n": 55
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "class_confusion",
+      "n": 8
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "depth_error",
+      "n": 105
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "duplicate",
+      "n": 106
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "ghost_no_lidar",
+      "n": 46
+     },
+     {
+      "range_bin": "30-40",
+      "fail_tag": "ghost_with_lidar",
+      "n": 33
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "class_confusion",
+      "n": 11
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "depth_error",
+      "n": 86
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "duplicate",
+      "n": 66
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "ghost_no_lidar",
+      "n": 31
+     },
+     {
+      "range_bin": "40-50",
+      "fail_tag": "ghost_with_lidar",
+      "n": 25
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "class_confusion",
+      "n": 1
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "depth_error",
+      "n": 26
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "duplicate",
+      "n": 10
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "ghost_no_lidar",
+      "n": 13
+     },
+     {
+      "range_bin": "50-60",
+      "fail_tag": "ghost_with_lidar",
+      "n": 7
+     },
+     {
+      "range_bin": "60-80",
+      "fail_tag": "depth_error",
+      "n": 1
+     }
+    ],
+    "worst_cases": [
+     18,
+     9,
+     251,
+     121,
+     44,
+     141,
+     244,
+     62,
+     330,
+     209
+    ],
+    "operating_point": {
+     "tp": 10667,
+     "fp": 1576,
+     "fn": 4247,
+     "precision": 0.871273380707343,
+     "recall": 0.7152340083143355,
+     "f1": 0.7855801450822992
+    }
+   }
+  },
+  "official": {
+   "mAP": 0.3731220746735975,
+   "NDS": 0.4250050799307048,
+   "class_ap": {
+    "car": 0.6927810500061973,
+    "truck": 0.6385243624827587,
+    "bus": 0.4996287168106839,
+    "trailer": 0.0,
+    "construction_vehicle": 0.0,
+    "pedestrian": 0.590659587638426,
+    "motorcycle": 0.4927874488869538,
+    "bicycle": 0.216890488075644,
+    "traffic_cone": 0.5999490928353113,
+    "barrier": 0.0
+   }
+  },
+  "variant": "base",
+  "fix": "temporal+lidar"
  },
  "gallery": [
   {
@@ -7434,6 +10779,48 @@
   }
  ],
  "gif_scene": "scene-0916",
+ "compare_gallery": [
+  {
+   "scene": "scene-0916",
+   "frame": 24,
+   "found_before": 23,
+   "fp_before": 18,
+   "found_after": 34,
+   "fp_after": 6,
+   "n_gt": 48,
+   "image": "compare_00"
+  },
+  {
+   "scene": "scene-0103",
+   "frame": 10,
+   "found_before": 24,
+   "fp_before": 19,
+   "found_after": 37,
+   "fp_after": 11,
+   "n_gt": 44,
+   "image": "compare_01"
+  },
+  {
+   "scene": "scene-0916",
+   "frame": 7,
+   "found_before": 28,
+   "fp_before": 9,
+   "found_after": 41,
+   "fp_after": 4,
+   "n_gt": 63,
+   "image": "compare_02"
+  },
+  {
+   "scene": "scene-0103",
+   "frame": 17,
+   "found_before": 22,
+   "fp_before": 14,
+   "found_after": 24,
+   "fp_after": 3,
+   "n_gt": 45,
+   "image": "compare_03"
+  }
+ ],
  "timing": {
   "frames": 404,
   "median_ms": 107.02039999978297,

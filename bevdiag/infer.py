@@ -12,7 +12,7 @@ from nuscenes.utils.data_classes import Box
 from pyquaternion import Quaternion
 
 from .data import CLASS_NAMES, CameraDataset, SampleInfo
-from .model import TemporalRunner, decode, load_bevformer_tiny
+from .model import CONFIGS, TemporalRunner, decode, load_bevformer
 
 DEFAULT_ATTR = {"car": "vehicle.parked", "pedestrian": "pedestrian.moving", "trailer": "vehicle.parked",
                 "truck": "vehicle.parked", "bus": "vehicle.moving", "motorcycle": "cycle.without_rider",
@@ -69,11 +69,12 @@ def to_nusc_results(infos, preds) -> dict:
 
 @torch.no_grad()
 def run_inference(infos, ckpt: str, out_dir: str, workers: int = 4, video_test_mode: bool = True,
-                  device: str = "cuda") -> list[dict]:
+                  device: str = "cuda", variant: str = "tiny") -> list[dict]:
     os.makedirs(out_dir, exist_ok=True)
-    model = load_bevformer_tiny(ckpt, device)
+    cfg = CONFIGS[variant]
+    model = load_bevformer(ckpt, device, variant)
     runner = TemporalRunner(model, video_test_mode=video_test_mode)
-    loader = torch.utils.data.DataLoader(CameraDataset(infos), batch_size=None, shuffle=False,
+    loader = torch.utils.data.DataLoader(CameraDataset(infos, cfg.img_scale, cfg.img_norm), batch_size=None, shuffle=False,
                                          num_workers=workers, pin_memory=True,
                                          persistent_workers=False, prefetch_factor=2 if workers else None)
     preds, times = [], []
@@ -83,7 +84,7 @@ def run_inference(infos, ckpt: str, out_dir: str, workers: int = 4, video_test_m
         t0 = time.perf_counter()
         cls, box = runner.step(img, batch["lidar2img"][None], info.can_bus, info.scene_token,
                                tuple(int(x) for x in batch["img_shape"]))
-        boxes, scores, labels = decode(cls, box)
+        boxes, scores, labels = decode(cls.float(), box.float())
         if device == "cuda":
             torch.cuda.synchronize()
         times.append(time.perf_counter() - t0)
@@ -95,7 +96,7 @@ def run_inference(infos, ckpt: str, out_dir: str, workers: int = 4, video_test_m
         pickle.dump(preds, f)
     with open(os.path.join(out_dir, "results_nusc.json"), "w") as f:
         json.dump(to_nusc_results(infos, preds), f)
-    stats = {"frames": len(preds), "median_ms": float(np.median(times[1:] if len(times) > 1 else times) * 1000),
+    stats = {"model": cfg.name, "frames": len(preds), "median_ms": float(np.median(times[1:] if len(times) > 1 else times) * 1000),
              "gpu": torch.cuda.get_device_name(0) if device == "cuda" else "cpu",
              "peak_gpu_mem_mb": float(torch.cuda.max_memory_allocated() / 2 ** 20) if device == "cuda" else 0.0}
     with open(os.path.join(out_dir, "timing.json"), "w") as f:

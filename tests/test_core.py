@@ -191,3 +191,45 @@ def test_budget_leaves_headroom():
     n = os.cpu_count()
     assert 1 <= b.cpu_threads <= max(1, int(n * 0.9)) < n + 1
     assert b.gpu_mem_fraction <= 0.9
+
+
+# ----------------------------------------------------------------------------- bigger-model building blocks
+def test_dcn_with_zero_offsets_is_half_a_plain_conv():
+    from bevdiag.model import ModulatedDeformConv
+
+    torch.manual_seed(0)
+    m = ModulatedDeformConv(4, 5, stride=2)
+    torch.nn.init.zeros_(m.conv_offset.weight)
+    torch.nn.init.zeros_(m.conv_offset.bias)  # offset 0, mask sigmoid(0) = 0.5
+    torch.nn.init.normal_(m.weight)
+    x = torch.randn(2, 4, 9, 11)
+    ref = 0.5 * torch.nn.functional.conv2d(x, m.weight, stride=2, padding=1)
+    torch.testing.assert_close(m(x), ref, atol=1e-5, rtol=1e-5)
+
+
+def test_fpn_levels_and_strides():
+    from bevdiag.model import FPN
+
+    fpn = FPN((512, 1024, 2048), 256, 4)
+    feats = [torch.randn(1, c, s, s * 2) for c, s in ((512, 32), (1024, 16), (2048, 8))]
+    outs = fpn(feats)
+    assert [tuple(o.shape[2:]) for o in outs] == [(32, 64), (16, 32), (8, 16), (4, 8)]
+
+
+def test_temporal_fusion_boosts_persistent_and_penalises_one_off():
+    from bevdiag.data import SampleInfo
+    from bevdiag.fixes import temporal_score_fusion
+
+    def info(t):
+        return SampleInfo(*(["tok", "scene", "n", "d", t, "l", "p"] + [np.eye(4), np.eye(4)] + [[]] * 5 +
+                            [np.zeros(18)]))
+
+    box = np.array([[10.0, 5.0, 0.0, 2.0, 4.5, 1.6, 0.0, 0.0, 0.0]])
+    ghost = np.array([[-20.0, 30.0, 0.0, 2.0, 4.5, 1.6, 0.0, 0.0, 0.0]])
+    f0 = {"boxes": box, "scores": np.array([0.9], np.float32), "labels": np.array([0])}
+    f1 = {"boxes": np.r_[box, ghost], "scores": np.array([0.3, 0.3], np.float32), "labels": np.array([0, 0])}
+    out = temporal_score_fusion([info(0), info(500_000)], [f0, f1], w=0.5, miss_penalty=0.2)
+    assert out[0]["scores"][0] == pytest.approx(0.9)  # first frame of a scene is untouched
+    assert out[1]["scores"][0] == pytest.approx(0.6)  # 0.5*0.3 + 0.5*0.9
+    assert out[1]["scores"][1] == pytest.approx(0.24)  # unmatched: 0.3 * (1 - 0.2)
+    np.testing.assert_array_equal(out[1]["boxes"], f1["boxes"])  # boxes never move

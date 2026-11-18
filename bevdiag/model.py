@@ -1,7 +1,7 @@
-"""Pure-PyTorch port of BEVFormer-tiny (Li et al., ECCV 2022) for inference.
+"""Pure-PyTorch port of BEVFormer (Li et al., ECCV 2022) for inference: tiny, small and base.
 
-Loads the official checkpoint `bevformer_tiny_epoch_24.pth` with zero missing / unexpected
-keys. No mmcv / mmdet / mmdet3d and no custom CUDA ops: multi-scale deformable attention
+Loads the official checkpoints (`bevformer_tiny_epoch_24.pth`, `bevformer_small_epoch_24.pth`,
+`bevformer_r101_dcn_24ep.pth`) with zero missing / unexpected keys. No mmcv / mmdet / mmdet3d and no custom CUDA ops: multi-scale deformable attention
 uses the grid_sample reference implementation (numerically equivalent to the CUDA kernel).
 Module and parameter names mirror the reference code so the state dict maps 1:1.
 """
@@ -27,61 +27,137 @@ def inverse_sigmoid(x, eps=1e-5):
     return torch.log(x.clamp(min=eps) / (1 - x).clamp(min=eps))
 
 
-def ms_deform_attn(value, spatial_shapes, sampling_locations, attention_weights):
+def ms_deform_attn(value, spatial_shapes, sampling_locations, attention_weights, chunk=8192):
     """Reference multi-scale deformable attention (mmcv `multi_scale_deformable_attn_pytorch`).
 
     value: (bs, num_value, heads, c); sampling_locations: (bs, nq, heads, levels, points, 2) in [0,1];
     attention_weights: (bs, nq, heads, levels, points). Returns (bs, nq, heads*c).
+    Queries are processed in chunks and levels are accumulated, so peak memory stays bounded
+    for the 200x200 BEV of BEVFormer-base.
     """
     bs, _, num_heads, c = value.shape
     _, nq, _, num_levels, num_points, _ = sampling_locations.shape
     value_list = value.split([int(h) * int(w) for h, w in spatial_shapes], dim=1)
-    grids = 2 * sampling_locations - 1
-    sampled = []
-    for lvl, (h, w) in enumerate(spatial_shapes):
-        h, w = int(h), int(w)
-        v = value_list[lvl].flatten(2).transpose(1, 2).reshape(bs * num_heads, c, h, w)
-        g = grids[:, :, :, lvl].transpose(1, 2).flatten(0, 1)
-        sampled.append(F.grid_sample(v, g, mode="bilinear", padding_mode="zeros", align_corners=False))
-    attention_weights = attention_weights.transpose(1, 2).reshape(bs * num_heads, 1, nq, num_levels * num_points)
-    out = (torch.stack(sampled, dim=-2).flatten(-2) * attention_weights).sum(-1)
+    vals = [value_list[l].flatten(2).transpose(1, 2).reshape(bs * num_heads, c, int(h), int(w))
+            for l, (h, w) in enumerate(spatial_shapes)]
+    outs = []
+    for q0 in range(0, nq, chunk):
+        loc = sampling_locations[:, q0:q0 + chunk]
+        aw = attention_weights[:, q0:q0 + chunk]
+        n = loc.shape[1]
+        grids = 2 * loc - 1
+        acc = None
+        for lvl in range(num_levels):
+            g = grids[:, :, :, lvl].transpose(1, 2).flatten(0, 1)  # (bs*heads, n, points, 2)
+            sv = F.grid_sample(vals[lvl], g, mode="bilinear", padding_mode="zeros", align_corners=False)
+            w = aw[:, :, :, lvl].transpose(1, 2).reshape(bs * num_heads, 1, n, num_points)
+            part = (sv * w).sum(-1)  # (bs*heads, c, n)
+            acc = part if acc is None else acc + part
+        outs.append(acc)
+    out = torch.cat(outs, dim=-1)
     return out.view(bs, num_heads * c, nq).transpose(1, 2).contiguous()
 
 
 # --------------------------------------------------------------------------- image branch
 class ConvWrap(nn.Module):
-    def __init__(self, cin, cout, k, p=0):
+    def __init__(self, cin, cout, k, p=0, stride=1):
         super().__init__()
-        self.conv = nn.Conv2d(cin, cout, k, padding=p)
+        self.conv = nn.Conv2d(cin, cout, k, stride=stride, padding=p)
 
     def forward(self, x):
         return self.conv(x)
 
 
-class FPN1(nn.Module):
-    """mmdet FPN with a single input level / single output (BEVFormer-tiny config)."""
+class FPN(nn.Module):
+    """mmdet FPN (nearest upsampling, add_extra_convs='on_output', relu_before_extra_convs)."""
 
-    def __init__(self, cin=2048, cout=256):
+    def __init__(self, in_channels=(2048,), cout=256, num_outs=1):
         super().__init__()
-        self.lateral_convs = nn.ModuleList([ConvWrap(cin, cout, 1)])
-        self.fpn_convs = nn.ModuleList([ConvWrap(cout, cout, 3, 1)])
+        self.n_in = len(in_channels)
+        self.num_outs = num_outs
+        self.lateral_convs = nn.ModuleList([ConvWrap(c, cout, 1) for c in in_channels])
+        convs = [ConvWrap(cout, cout, 3, 1) for _ in in_channels]
+        convs += [ConvWrap(cout, cout, 3, 1, stride=2) for _ in range(num_outs - self.n_in)]
+        self.fpn_convs = nn.ModuleList(convs)
+
+    def forward(self, feats):
+        lat = [l(f) for l, f in zip(self.lateral_convs, feats)]
+        for i in range(self.n_in - 1, 0, -1):
+            lat[i - 1] = lat[i - 1] + F.interpolate(lat[i], size=lat[i - 1].shape[2:], mode="nearest")
+        outs = [self.fpn_convs[i](lat[i]) for i in range(self.n_in)]
+        for i in range(self.n_in, self.num_outs):
+            src = outs[-1] if i == self.n_in else F.relu(outs[-1])
+            outs.append(self.fpn_convs[i](src))
+        return outs
+
+
+class ModulatedDeformConv(nn.Module):
+    """mmcv ModulatedDeformConv2dPack (DCNv2) on top of torchvision.ops.deform_conv2d."""
+
+    def __init__(self, cin, cout, stride=1):
+        super().__init__()
+        self.stride = stride
+        self.weight = nn.Parameter(torch.zeros(cout, cin, 3, 3))
+        self.conv_offset = nn.Conv2d(cin, 27, 3, stride=stride, padding=1)
 
     def forward(self, x):
-        return self.fpn_convs[0](self.lateral_convs[0](x))
+        o1, o2, mask = torch.chunk(self.conv_offset(x), 3, dim=1)
+        offset = torch.cat((o1, o2), dim=1)
+        return torchvision.ops.deform_conv2d(x, offset, self.weight, None, stride=self.stride, padding=1,
+                                             mask=torch.sigmoid(mask))
 
 
-class ResNet50C5(nn.Module):
-    """torchvision ResNet-50 trunk returning stage-4 (C5) features; key names match mmdet."""
+class Bottleneck(nn.Module):
+    expansion = 4
 
-    def __init__(self):
+    def __init__(self, cin, planes, stride=1, downsample=None, caffe=False, dcn=False):
         super().__init__()
-        r = torchvision.models.resnet50(weights=None)
-        self.conv1, self.bn1, self.relu, self.maxpool = r.conv1, r.bn1, r.relu, r.maxpool
-        self.layer1, self.layer2, self.layer3, self.layer4 = r.layer1, r.layer2, r.layer3, r.layer4
+        s1, s2 = (stride, 1) if caffe else (1, stride)
+        self.conv1 = nn.Conv2d(cin, planes, 1, stride=s1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.conv2 = ModulatedDeformConv(planes, planes, s2) if dcn else \
+            nn.Conv2d(planes, planes, 3, stride=s2, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.conv3 = nn.Conv2d(planes, planes * 4, 1, bias=False)
+        self.bn3 = nn.BatchNorm2d(planes * 4)
+        self.relu = nn.ReLU(inplace=True)
+        self.downsample = downsample
+
+    def forward(self, x):
+        idt = x if self.downsample is None else self.downsample(x)
+        out = self.relu(self.bn1(self.conv1(x)))
+        out = self.relu(self.bn2(self.conv2(out)))
+        return self.relu(self.bn3(self.conv3(out)) + idt)
+
+
+class ResNet(nn.Module):
+    """mmdet ResNet (key names match): depth 50/101, pytorch or caffe style, DCNv2 per stage."""
+
+    def __init__(self, depth=50, caffe=False, stage_dcn=(False, False, False, False), out_indices=(3,)):
+        super().__init__()
+        blocks = {50: (3, 4, 6, 3), 101: (3, 4, 23, 3)}[depth]
+        self.out_indices = out_indices
+        self.conv1 = nn.Conv2d(3, 64, 7, 2, 3, bias=False)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.ReLU(inplace=True)
+        self.maxpool = nn.MaxPool2d(3, 2, 1)
+        cin = 64
+        for i, (n, planes) in enumerate(zip(blocks, (64, 128, 256, 512))):
+            stride = 1 if i == 0 else 2
+            ds = nn.Sequential(nn.Conv2d(cin, planes * 4, 1, stride=stride, bias=False), nn.BatchNorm2d(planes * 4))
+            layers = [Bottleneck(cin, planes, stride, ds, caffe, stage_dcn[i])]
+            cin = planes * 4
+            layers += [Bottleneck(cin, planes, 1, None, caffe, stage_dcn[i]) for _ in range(n - 1)]
+            setattr(self, f"layer{i + 1}", nn.Sequential(*layers))
 
     def forward(self, x):
         x = self.maxpool(self.relu(self.bn1(self.conv1(x))))
-        return self.layer4(self.layer3(self.layer2(self.layer1(x))))
+        outs = []
+        for i in range(4):
+            x = getattr(self, f"layer{i + 1}")(x)
+            if i in self.out_indices:
+                outs.append(x)
+        return outs
 
 
 # --------------------------------------------------------------------------- attention blocks
@@ -149,10 +225,10 @@ class MSDeformableAttention3D(nn.Module):
 
 
 class SpatialCrossAttention(nn.Module):
-    def __init__(self, dim=256, num_cams=6):
+    def __init__(self, dim=256, num_cams=6, levels=1):
         super().__init__()
         self.dim, self.num_cams = dim, num_cams
-        self.deformable_attention = MSDeformableAttention3D(dim)
+        self.deformable_attention = MSDeformableAttention3D(dim, levels=levels)
         self.output_proj = nn.Linear(dim, dim)
 
     def forward(self, query, feats, reference_points_cam, bev_mask, spatial_shapes):
@@ -183,9 +259,9 @@ class SpatialCrossAttention(nn.Module):
 
 
 class BEVFormerLayer(nn.Module):
-    def __init__(self, dim=256):
+    def __init__(self, dim=256, levels=1):
         super().__init__()
-        self.attentions = nn.ModuleList([TemporalSelfAttention(dim), SpatialCrossAttention(dim)])
+        self.attentions = nn.ModuleList([TemporalSelfAttention(dim), SpatialCrossAttention(dim, levels=levels)])
         self.ffns = nn.ModuleList([FFN(dim)])
         self.norms = nn.ModuleList([nn.LayerNorm(dim) for _ in range(3)])
 
@@ -200,9 +276,9 @@ class BEVFormerLayer(nn.Module):
 
 
 class BEVFormerEncoder(nn.Module):
-    def __init__(self, dim=256, num_layers=3, pc_range=PC_RANGE, num_points_in_pillar=4):
+    def __init__(self, dim=256, num_layers=3, pc_range=PC_RANGE, num_points_in_pillar=4, levels=1):
         super().__init__()
-        self.layers = nn.ModuleList([BEVFormerLayer(dim) for _ in range(num_layers)])
+        self.layers = nn.ModuleList([BEVFormerLayer(dim, levels) for _ in range(num_layers)])
         self.pc_range = pc_range
         self.num_points_in_pillar = num_points_in_pillar
 
@@ -334,10 +410,10 @@ class Decoder(nn.Module):
 
 
 class PerceptionTransformer(nn.Module):
-    def __init__(self, dim=256, num_cams=6, rotate_center=(100, 100)):
+    def __init__(self, dim=256, num_cams=6, rotate_center=(100, 100), enc_layers=3, levels=1):
         super().__init__()
         self.dim = dim
-        self.encoder = BEVFormerEncoder(dim)
+        self.encoder = BEVFormerEncoder(dim, num_layers=enc_layers, levels=levels)
         self.decoder = Decoder(dim)
         self.level_embeds = nn.Parameter(torch.zeros(4, dim))
         self.cams_embeds = nn.Parameter(torch.zeros(num_cams, dim))
@@ -347,8 +423,9 @@ class PerceptionTransformer(nn.Module):
         self.can_bus_mlp.add_module("norm", nn.LayerNorm(dim))
         self.rotate_center = list(rotate_center)
 
-    def get_bev_features(self, feat, bev_queries, bev_hw, grid_length, bev_pos, prev_bev, can_bus, lidar2img, img_hw):
+    def get_bev_features(self, feats, bev_queries, bev_hw, grid_length, bev_pos, prev_bev, can_bus, lidar2img, img_hw):
         H, W = bev_hw
+        feat = feats[0]
         bs = feat.size(0)
         bev_queries = bev_queries.unsqueeze(1).repeat(1, bs, 1)
         bev_pos = bev_pos.flatten(2).permute(2, 0, 1)
@@ -370,17 +447,22 @@ class PerceptionTransformer(nn.Module):
                 t = rotate(t, float(cb[i, -1]), center=self.rotate_center)
                 prev_bev[:, i] = t.permute(1, 2, 0).reshape(H * W, -1)
         bev_queries = bev_queries + self.can_bus_mlp(can_bus.to(bev_queries.dtype))[None]
-        _, num_cam, c, h, w = feat.shape
-        f = feat.flatten(3).permute(1, 0, 3, 2)
-        f = f + self.cams_embeds[:, None, None, :].to(f.dtype)
-        f = f + self.level_embeds[None, None, 0:1, :].to(f.dtype)
-        spatial_shapes = torch.as_tensor([(h, w)], dtype=torch.long, device=feat.device)
-        f = f.permute(0, 2, 1, 3)  # (num_cam, HW, bs, c)
+        flat, shapes = [], []
+        for lvl, fl in enumerate(feats):
+            _, num_cam, c, h, w = fl.shape
+            f = fl.flatten(3).permute(1, 0, 3, 2)
+            f = f + self.cams_embeds[:, None, None, :].to(f.dtype)
+            f = f + self.level_embeds[None, None, lvl:lvl + 1, :].to(f.dtype)
+            flat.append(f)
+            shapes.append((h, w))
+        spatial_shapes = torch.as_tensor(shapes, dtype=torch.long, device=feat.device)
+        f = torch.cat(flat, 2).permute(0, 2, 1, 3)  # (num_cam, sum HW, bs, c)
         return self.encoder(bev_queries, f, bev_hw, bev_pos, spatial_shapes, prev_bev, shift, lidar2img, img_hw)
 
-    def forward(self, feat, bev_queries, object_query_embed, bev_hw, grid_length, bev_pos, reg_branches,
+    def forward(self, feats, bev_queries, object_query_embed, bev_hw, grid_length, bev_pos, reg_branches,
                 prev_bev, can_bus, lidar2img, img_hw):
-        bev_embed = self.get_bev_features(feat, bev_queries, bev_hw, grid_length, bev_pos, prev_bev,
+        feat = feats[0]
+        bev_embed = self.get_bev_features(feats, bev_queries, bev_hw, grid_length, bev_pos, prev_bev,
                                           can_bus, lidar2img, img_hw)
         bs = feat.size(0)
         query_pos, query = torch.split(object_query_embed, self.dim, dim=1)
@@ -410,14 +492,14 @@ class LearnedPositionalEncoding(nn.Module):
 
 class BEVFormerHead(nn.Module):
     def __init__(self, dim=256, bev_h=50, bev_w=50, num_query=900, num_classes=10, code_size=10,
-                 num_layers=6, pc_range=PC_RANGE):
+                 num_layers=6, pc_range=PC_RANGE, enc_layers=3, levels=1):
         super().__init__()
         self.bev_h, self.bev_w, self.pc_range = bev_h, bev_w, pc_range
         self.real_w = pc_range[3] - pc_range[0]
         self.real_h = pc_range[4] - pc_range[1]
         self.code_weights = nn.Parameter(torch.ones(code_size), requires_grad=False)
         self.positional_encoding = LearnedPositionalEncoding(dim // 2, bev_h, bev_w)
-        self.transformer = PerceptionTransformer(dim)
+        self.transformer = PerceptionTransformer(dim, enc_layers=enc_layers, levels=levels)
         cls = []
         for _ in range(2):
             cls += [nn.Linear(dim, dim), nn.LayerNorm(dim), nn.ReLU(inplace=True)]
@@ -431,11 +513,12 @@ class BEVFormerHead(nn.Module):
         self.bev_embedding = nn.Embedding(bev_h * bev_w, dim)
         self.query_embedding = nn.Embedding(num_query, dim * 2)
 
-    def forward(self, feat, prev_bev, can_bus, lidar2img, img_hw):
+    def forward(self, feats, prev_bev, can_bus, lidar2img, img_hw):
+        feat = feats[0]
         bs = feat.size(0)
         bev_pos = self.positional_encoding(bs, self.bev_h, self.bev_w, feat.device).to(feat.dtype)
         bev_embed, hs, init_ref, inter_ref = self.transformer(
-            feat, self.bev_embedding.weight, self.query_embedding.weight, (self.bev_h, self.bev_w),
+            feats, self.bev_embedding.weight, self.query_embedding.weight, (self.bev_h, self.bev_w),
             (self.real_h / self.bev_h, self.real_w / self.bev_w), bev_pos, self.reg_branches,
             prev_bev, can_bus, lidar2img, img_hw)
         hs = hs.permute(0, 2, 1, 3)
@@ -452,12 +535,44 @@ class BEVFormerHead(nn.Module):
         return bev_embed, cls, tmp
 
 
-class BEVFormerTiny(nn.Module):
-    def __init__(self):
+from dataclasses import dataclass  # noqa: E402
+
+
+@dataclass(frozen=True)
+class BEVFormerConfig:
+    name: str
+    ckpt: str
+    depth: int
+    caffe: bool
+    dcn: bool
+    out_indices: tuple
+    fpn_in: tuple
+    levels: int
+    bev: int
+    enc_layers: int
+    img_scale: float
+    img_norm: str  # "torchvision" (RGB, mean/std) or "caffe" (BGR, mean only)
+    published_nds: float
+    published_map: float
+
+
+CONFIGS = {
+    "tiny": BEVFormerConfig("BEVFormer-tiny", "bevformer_tiny_epoch_24.pth", 50, False, False, (3,), (2048,),
+                            1, 50, 3, 0.5, "torchvision", 0.354, 0.252),
+    "small": BEVFormerConfig("BEVFormer-small", "bevformer_small_epoch_24.pth", 101, True, True, (3,), (2048,),
+                             1, 150, 3, 0.8, "caffe", 0.479, 0.370),
+    "base": BEVFormerConfig("BEVFormer-base", "bevformer_r101_dcn_24ep.pth", 101, True, True, (1, 2, 3),
+                            (512, 1024, 2048), 4, 200, 6, 1.0, "caffe", 0.517, 0.416),
+}
+
+
+class BEVFormer(nn.Module):
+    def __init__(self, cfg: BEVFormerConfig = CONFIGS["tiny"]):
         super().__init__()
-        self.img_backbone = ResNet50C5()
-        self.img_neck = FPN1()
-        self.pts_bbox_head = BEVFormerHead()
+        self.cfg = cfg
+        self.img_backbone = ResNet(cfg.depth, cfg.caffe, (False, False, cfg.dcn, cfg.dcn), cfg.out_indices)
+        self.img_neck = FPN(cfg.fpn_in, 256, cfg.levels)
+        self.pts_bbox_head = BEVFormerHead(bev_h=cfg.bev, bev_w=cfg.bev, enc_layers=cfg.enc_layers, levels=cfg.levels)
 
     def forward(self, img, lidar2img, can_bus, img_hw, prev_bev=None):
         """img (bs, 6, 3, H, W) normalized; lidar2img (bs, 6, 4, 4); can_bus (bs, 18) with deltas applied.
@@ -465,9 +580,12 @@ class BEVFormerTiny(nn.Module):
         Returns bev_embed, cls_logits (bs, 900, 10), bbox_preds (bs, 900, 10).
         """
         bs, n = img.shape[:2]
-        feat = self.img_neck(self.img_backbone(img.flatten(0, 1)))
-        feat = feat.view(bs, n, *feat.shape[1:])
-        return self.pts_bbox_head(feat, prev_bev, can_bus, lidar2img, img_hw)
+        feats = self.img_neck(self.img_backbone(img.flatten(0, 1)))
+        feats = [f.view(bs, n, *f.shape[1:]) for f in feats]
+        return self.pts_bbox_head(feats, prev_bev, can_bus, lidar2img, img_hw)
+
+
+BEVFormerTiny = BEVFormer  # backwards compatible name
 
 
 def decode(cls_logits, bbox_preds, max_num=300, post_center_range=POST_CENTER_RANGE):
@@ -485,15 +603,18 @@ def decode(cls_logits, bbox_preds, max_num=300, post_center_range=POST_CENTER_RA
     return boxes[keep], scores[keep], labels[keep]
 
 
-def load_bevformer_tiny(ckpt_path: str, device="cuda") -> BEVFormerTiny:
-    model = BEVFormerTiny()
+def load_bevformer(ckpt_path: str, device="cuda", variant: str = "tiny") -> BEVFormer:
+    model = BEVFormer(CONFIGS[variant])
     sd = torch.load(ckpt_path, map_location="cpu", weights_only=True)
     sd = sd.get("state_dict", sd)
     missing, unexpected = model.load_state_dict(sd, strict=False)
-    # the 4-level level_embeds is kept (only level 0 is used); nothing else may be missing
     if missing or unexpected:
-        raise RuntimeError(f"checkpoint mismatch: missing={missing} unexpected={unexpected}")
+        raise RuntimeError(f"checkpoint mismatch: missing={missing[:10]} unexpected={unexpected[:10]}")
     return model.eval().to(device)
+
+
+def load_bevformer_tiny(ckpt_path: str, device="cuda") -> BEVFormer:
+    return load_bevformer(ckpt_path, device, "tiny")
 
 
 class TemporalRunner:

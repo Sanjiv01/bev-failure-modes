@@ -1,4 +1,4 @@
-# Downloads everything the pipeline needs (~5.4 GB) into ./data and ./checkpoints.
+# Downloads everything the pipeline needs (~6.4 GB) into ./data and ./checkpoints.
 # nuScenes is released under CC BY-NC-SA 4.0 -- by downloading you accept its terms (nuscenes.org/terms-of-use).
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -8,6 +8,12 @@ $ckpt = "$root\checkpoints\bevformer_tiny_epoch_24.pth"
 if (-not (Test-Path $ckpt)) {
   Write-Host "BEVFormer-tiny checkpoint (400 MB, official GitHub release)"
   curl.exe -L -o $ckpt https://github.com/zhiqi-li/storage/releases/download/v1.0/bevformer_tiny_epoch_24.pth
+}
+foreach ($name in "bevformer_small_epoch_24.pth", "bevformer_r101_dcn_24ep.pth") {
+  if (-not (Test-Path "$root\checkpoints\$name")) {
+    Write-Host "$name (official GitHub release, used by the improvement study)"
+    curl.exe -L -o "$root\checkpoints\$name" "https://github.com/zhiqi-li/storage/releases/download/v1.0/$name"
+  }
 }
 if (-not (Test-Path "$root\data\nuscenes\v1.0-mini")) {
   Write-Host "nuScenes v1.0-mini (4.2 GB)"

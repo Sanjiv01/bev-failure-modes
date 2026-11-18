@@ -20,8 +20,9 @@ CAM_ORDER = ["CAM_FRONT", "CAM_FRONT_RIGHT", "CAM_FRONT_LEFT",
              "CAM_BACK", "CAM_BACK_LEFT", "CAM_BACK_RIGHT"]
 CLASS_NAMES = ["car", "truck", "construction_vehicle", "bus", "trailer", "barrier",
                "motorcycle", "bicycle", "pedestrian", "traffic_cone"]
-IMG_MEAN = np.array([123.675, 116.28, 103.53], dtype=np.float32)
+IMG_MEAN = np.array([123.675, 116.28, 103.53], dtype=np.float32)  # RGB, torchvision-style (tiny)
 IMG_STD = np.array([58.395, 57.12, 57.375], dtype=np.float32)
+CAFFE_MEAN = np.array([103.530, 116.280, 123.675], dtype=np.float32)  # BGR, std 1 (small / base)
 IMG_SCALE = 0.5
 PAD_DIVISOR = 32
 
@@ -152,15 +153,22 @@ def _sample_info(nusc, nusc_can, sample, scene) -> SampleInfo:
         tags=scene_tags(scene["description"]))
 
 
-def load_image_tensor(paths) -> tuple[torch.Tensor, tuple[int, int]]:
-    """mmcv-equivalent test pipeline: BGR->RGB, normalize, resize 0.5 (bilinear), pad to /32."""
+def load_image_tensor(paths, scale: float = IMG_SCALE, norm: str = "torchvision") -> tuple[torch.Tensor, tuple[int, int]]:
+    """mmcv-equivalent test pipeline: normalize, resize by `scale` (bilinear), pad to /32.
+
+    norm="torchvision": BGR->RGB, (x-mean)/std (BEVFormer-tiny); norm="caffe": stay BGR, x-mean (small/base).
+    """
     out = []
     for p in paths:
         img = cv2.imread(p, cv2.IMREAD_UNCHANGED).astype(np.float32)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = (img - IMG_MEAN) / IMG_STD
+        if norm == "caffe":
+            img = img - CAFFE_MEAN
+        else:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = (img - IMG_MEAN) / IMG_STD
         h, w = img.shape[:2]
-        img = cv2.resize(img, (int(w * IMG_SCALE), int(h * IMG_SCALE)), interpolation=cv2.INTER_LINEAR)
+        if scale != 1.0:
+            img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_LINEAR)
         h2, w2 = img.shape[:2]
         ph = int(np.ceil(h2 / PAD_DIVISOR)) * PAD_DIVISOR
         pw = int(np.ceil(w2 / PAD_DIVISOR)) * PAD_DIVISOR
@@ -180,17 +188,18 @@ def scaled_lidar2img(info: SampleInfo, scale: float = IMG_SCALE) -> np.ndarray:
 class CameraDataset(torch.utils.data.Dataset):
     """Yields preprocessed 6-camera tensors in temporal order (keep shuffle=False)."""
 
-    def __init__(self, infos):
+    def __init__(self, infos, scale: float = IMG_SCALE, norm: str = "torchvision"):
         self.infos = infos
+        self.scale, self.norm = scale, norm
 
     def __len__(self):
         return len(self.infos)
 
     def __getitem__(self, i):
         info = self.infos[i]
-        img, shape = load_image_tensor(info.cam_paths)
+        img, shape = load_image_tensor(info.cam_paths, self.scale, self.norm)
         return {"index": i, "img": img, "img_shape": shape,
-                "lidar2img": torch.from_numpy(scaled_lidar2img(info))}
+                "lidar2img": torch.from_numpy(scaled_lidar2img(info, self.scale))}
 
 
 def load_lidar_points(path: str) -> np.ndarray:

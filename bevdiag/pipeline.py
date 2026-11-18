@@ -95,17 +95,22 @@ def _filter_preds(preds, prm, keep_mask):
     return out
 
 
-def diagnose_and_fix(nusc, infos, preds, val_scenes, out_dir, base_metrics) -> dict:
-    os.makedirs(out_dir, exist_ok=True)
-    gt = gt_table(nusc, infos)
+def build_tables(nusc, infos, preds, val_scenes, gt=None):
+    gt = gt_table(nusc, infos) if gt is None else gt
     pr = pred_table(infos, preds)
     for df in (gt, pr):
         df["split"] = np.where(df.scene.isin(val_scenes), "heldout", "seen_in_training")
+    return gt, pr
+
+
+def analyze(gt, pr, out_dir, prefix="", thr=None):
+    """Slice metrics + failure tags for held-out and all-mini sets. Returns (result dict, matched tables)."""
+    os.makedirs(out_dir, exist_ok=True)
     sets = {"heldout": (gt[gt.split == "heldout"], pr[pr.split == "heldout"]), "all_mini": (gt, pr)}
     matched = {k: match(*v) for k, v in sets.items()}
-    thr = best_f1_threshold(*matched["heldout"])
-    summary = {"threshold": thr, "baseline_official": base_metrics, "sets": {}}
-    for name, (gtm, prm) in matched.items():
+    thr = best_f1_threshold(*matched["heldout"]) if thr is None else thr
+    res = {"threshold": thr, "sets": {}}
+    for name, (gtm, prm) in list(matched.items()):
         gtm, prm = tag_failures(gtm, prm, thr)
         matched[name] = (gtm, prm)
         veh = gtm[gtm.cls.isin(VEHICLES)]
@@ -133,10 +138,19 @@ def diagnose_and_fix(nusc, infos, preds, val_scenes, out_dir, base_metrics) -> d
             "worst_cases": worst_cases(gtm, prm, thr),
             "operating_point": operating_point(gtm, prm, prm.score >= thr),
         }
-        summary["sets"][name] = s
-        gtm.to_pickle(os.path.join(out_dir, f"gt_{name}.pkl"))
-        prm.to_pickle(os.path.join(out_dir, f"pred_{name}.pkl"))
+        res["sets"][name] = s
+        gtm.to_pickle(os.path.join(out_dir, f"gt_{prefix}{name}.pkl"))
+        prm.to_pickle(os.path.join(out_dir, f"pred_{prefix}{name}.pkl"))
 
+    return res, matched
+
+
+def diagnose_and_fix(nusc, infos, preds, val_scenes, out_dir, base_metrics, gt=None) -> dict:
+    os.makedirs(out_dir, exist_ok=True)
+    gt, pr = build_tables(nusc, infos, preds, val_scenes, gt)
+    res, matched = analyze(gt, pr, out_dir)
+    thr = res["threshold"]
+    summary = {"threshold": thr, "baseline_official": base_metrics, "sets": res["sets"]}
     # ------------------------------------------------------------------ fix A: LiDAR sanity filter
     vi = [i for i, inf in enumerate(infos) if inf.scene_name in val_scenes]
     vinfos = [infos[i] for i in vi]
@@ -206,3 +220,35 @@ def diagnose_and_fix(nusc, infos, preds, val_scenes, out_dir, base_metrics) -> d
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump(summary, f, indent=2, default=float)
     return summary
+
+
+def _weighted_recall(rows, keys):
+    rs = [r for r in rows if r["range"] in keys]
+    n = sum(r["n_gt"] for r in rs)
+    return sum((r["recall"] or 0) * r["n_gt"] for r in rs) / max(n, 1)
+
+
+def improved_headline(summary) -> None:
+    """Add before/after numbers for the improved system to summary['headline']."""
+    h = summary["headline"]
+    imp = summary["improved"]
+    b_rp = summary["sets"]["heldout"]["range_profile"]
+    i_rp = imp["sets"]["heldout"]["range_profile"]
+    for tag, rp in (("base", b_rp), ("imp", i_rp)):
+        al = [r for r in rp if r["group"] == "all"]
+        lv = [r for r in rp if r["group"] == "large_vehicle"]
+        h[f"{tag}_recall_0_30"] = _weighted_recall(al, ("0-10", "10-20", "20-30"))
+        h[f"{tag}_recall_30_50"] = _weighted_recall(al, ("30-40", "40-50"))
+        h[f"{tag}_recall_40_50"] = _weighted_recall(al, ("40-50",))
+        h[f"{tag}_large_recall_30_50"] = _weighted_recall(lv, ("30-40", "40-50"))
+    h["imp_mAP"] = imp["official"]["mAP"]
+    h["imp_NDS"] = imp["official"]["NDS"]
+    h["imp_precision"] = imp["sets"]["heldout"]["operating_point"]["precision"]
+    h["imp_recall"] = imp["sets"]["heldout"]["operating_point"]["recall"]
+    h["base_precision"] = summary["sets"]["heldout"]["operating_point"]["precision"]
+    h["base_recall"] = summary["sets"]["heldout"]["operating_point"]["recall"]
+    h["imp_system"] = f"{imp['variant']} + {imp['fix']}"
+    fp = lambda s: sum(r["n"] for r in s["fp_tags"])
+    fn = lambda s: sum(r["n"] for r in s["fn_tags"] if r["fail_tag"] != "beyond_bev_grid")
+    h["base_fp"], h["imp_fp"] = fp(summary["sets"]["heldout"]), fp(imp["sets"]["heldout"])
+    h["base_fn_in_grid"], h["imp_fn_in_grid"] = fn(summary["sets"]["heldout"]), fn(imp["sets"]["heldout"])

@@ -162,7 +162,7 @@ def render_gif(infos, gtm, prm, thr, scene, path, max_frames=40):
     q[0].save(path, save_all=True, append_images=q[1:], duration=350, loop=0, optimize=True)
 
 
-def build_report(nusc, infos, preds, summary, out_dir, docs_dir):
+def build_report(nusc, infos, preds, summary, out_dir, docs_dir, improved_preds=None):
     assets = os.path.join(docs_dir, "assets")
     os.makedirs(assets, exist_ok=True)
     thr = summary["threshold"]
@@ -198,6 +198,9 @@ def build_report(nusc, infos, preds, summary, out_dir, docs_dir):
     render_gif(infos, gh, ph, thr, scene, os.path.join(assets, "scene.gif"))
     summary["gif_scene"] = scene
 
+    if "improved" in summary:
+        render_improvement(infos, summary, out_dir, assets, gh, ph, scene)
+
     tpath = os.path.join(out_dir, "timing.json")
     if os.path.exists(tpath):
         with open(tpath) as f:
@@ -207,3 +210,93 @@ def build_report(nusc, infos, preds, summary, out_dir, docs_dir):
     from .html import write_html
 
     write_html(summary, os.path.join(docs_dir, "index.html"))
+
+
+# --------------------------------------------------------------------------- before / after
+def _counts(g, p, thr):
+    hit = int((g.matched & (g.match_score >= thr)).sum())
+    fp = int((~p.tp & (p.score >= thr)).sum())
+    return hit, len(g), fp
+
+
+def fig_compare_case(info, gb, pb, tb, ga, pa, ta, title, system):
+    img, l2i = _load_cam(info, _pick_camera(info, gb, pb, tb))
+    pts = load_lidar_points(info.lidar_path)
+    fig = plt.figure(figsize=(18, 5.4))
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.45, 1, 1], wspace=0.03)
+    a0, a1, a2 = (fig.add_subplot(gs[i]) for i in range(3))
+    viz.draw_camera(a0, img, l2i, ga, pa, ta, title="camera, improved system")
+    hb, nb, fb = _counts(gb, pb, tb)
+    ha, na, fa = _counts(ga, pa, ta)
+    viz.draw_bev(a1, gb, pb, tb, points=pts, lim=60, title=f"BEFORE: tiny as released  ·  {hb}/{nb} found · {fb} FP")
+    viz.draw_bev(a2, ga, pa, ta, points=pts, lim=60, title=f"AFTER: {system}  ·  {ha}/{na} found · {fa} FP")
+    viz.bev_legend(a2)
+    fig.suptitle(title, x=0.01, ha="left", fontsize=13, fontweight="semibold", y=0.9)
+    return fig, (hb, fb, ha, fa)
+
+
+def render_improvement(infos, summary, out_dir, assets, gh, ph, scene):
+    from . import viz_compare as vc
+
+    print("  before/after charts")
+    for fn, name in ((vc.fig_improve_hero, "improve_hero"), (vc.fig_ladder, "improve_ladder"),
+                     (vc.fig_before_after_range, "improve_range"), (vc.fig_class_ap_compare, "improve_class_ap"),
+                     (vc.fig_errors_compare, "improve_errors")):
+        viz.save_both(fn, os.path.join(assets, name), summary=summary)
+    ga = pd.read_pickle(os.path.join(out_dir, "gt_improved_heldout.pkl"))
+    pa = pd.read_pickle(os.path.join(out_dir, "pred_improved_heldout.pkl"))
+    tb, ta = summary["threshold"], summary["improved"]["threshold"]
+    system = vc.system_name(summary).replace("BEVFormer-", "")
+    print("  before/after gallery")
+    comp = os.path.join(assets, "compare")
+    os.makedirs(comp, exist_ok=True)
+    cases = []
+    for k, si in enumerate(summary["sets"]["heldout"]["worst_cases"][:4]):
+        info = infos[si]
+        frame = sum(1 for j in range(si) if infos[j].scene_name == info.scene_name)
+        title = f"{info.scene_name} · frame {frame} (held-out): the same frame before and after"
+        for th in ("light", "dark"):
+            with viz.theme(th):
+                fig, cnt = fig_compare_case(info, gh[gh.sample_idx == si], ph[ph.sample_idx == si], tb,
+                                            ga[ga.sample_idx == si], pa[pa.sample_idx == si], ta, title, system)
+                fig.savefig(os.path.join(comp, f"compare_{k:02d}_{th}.jpg"), dpi=100, bbox_inches="tight",
+                            pil_kwargs={"quality": 84})
+                plt.close(fig)
+        cases.append({"scene": info.scene_name, "frame": frame, "found_before": cnt[0], "fp_before": cnt[1],
+                      "found_after": cnt[2], "fp_after": cnt[3], "n_gt": int((gh.sample_idx == si).sum()),
+                      "image": f"compare_{k:02d}"})
+    summary["compare_gallery"] = cases
+    print("  before/after gif")
+    render_compare_gif(infos, gh, ph, tb, ga, pa, ta, scene, os.path.join(assets, "compare.gif"), system)
+
+
+def render_compare_gif(infos, gb, pb, tb, ga, pa, ta, scene, path, system, max_frames=40):
+    frames = []
+    idx = [i for i, inf in enumerate(infos) if inf.scene_name == scene][:max_frames]
+    with viz.theme("dark"):
+        for k, si in enumerate(idx):
+            info = infos[si]
+            g0, p0 = gb[gb.sample_idx == si], pb[pb.sample_idx == si]
+            g1, p1 = ga[ga.sample_idx == si], pa[pa.sample_idx == si]
+            img, l2i = _load_cam(info, 0, scale=0.4)
+            pts = load_lidar_points(info.lidar_path)[::2]
+            fig = plt.figure(figsize=(15, 4.3))
+            gs = fig.add_gridspec(1, 3, width_ratios=[1.45, 1, 1], wspace=0.02)
+            a0, a1, a2 = (fig.add_subplot(gs[i]) for i in range(3))
+            viz.draw_camera(a0, img, l2i, g1, p1, ta)
+            h0, n0, f0 = _counts(g0, p0, tb)
+            h1, n1, f1 = _counts(g1, p1, ta)
+            viz.draw_bev(a1, g0, p0, tb, points=pts, lim=60, title=f"before (tiny): {h0}/{n0} found, {f0} FP")
+            viz.draw_bev(a2, g1, p1, ta, points=pts, lim=60, title=f"after ({system}): {h1}/{n1} found, {f1} FP")
+            fig.text(0.01, 0.99, f"{scene} (held-out) · frame {k + 1}/{len(idx)} · front camera shows the improved system",
+                     fontsize=11, color=viz.T["text"], fontweight="semibold", va="top")
+            fig.text(0.01, 0.93, "blue = true positive · orange = false positive · violet dashed = missed · "
+                     "dashed square = ±51.2 m BEV grid", fontsize=9.5, color=viz.T["text2"], va="top")
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png", dpi=68)
+            plt.close(fig)
+            buf.seek(0)
+            frames.append(Image.open(buf).convert("RGB"))
+    pal = frames[len(frames) // 2].quantize(colors=96, method=Image.Quantize.MEDIANCUT)
+    q = [f.quantize(palette=pal, dither=Image.Dither.NONE) for f in frames]
+    q[0].save(path, save_all=True, append_images=q[1:], duration=380, loop=0, optimize=True)
