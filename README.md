@@ -43,10 +43,18 @@ The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/range_dark.png"><img src="docs/assets/report/range_light.png" alt="Recall by distance for cars, large vehicles and pedestrians, with the region outside the BEV grid shaded" width="100%"></picture>
 
+Recall, precision and AP side by side:
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/range_metrics_dark.png"><img src="docs/assets/range_metrics_light.png" alt="Recall, precision and AP by distance band for three object groups" width="100%"></picture>
+
 1. **Range is the dominant failure.** Recall falls from 96 % (cars, 0–10 m) to 20 % at 40–50 m and to zero past the grid. Precision falls with it (91 % → 34 %), so the few far detections are also mostly wrong. For a truck that needs about 160 m to stop from 65 mph, the usable perception horizon here is about 30 m.
 2. **Large vehicles fall off a cliff.** Trucks and buses are found 93–100 % of the time within 20 m, but only 5 % at 40–50 m (n=22) and 0 % beyond. Their extra size does not buy extra range.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/heatmap_dark.png"><img src="docs/assets/report/heatmap_light.png" alt="Recall by class and distance band" width="100%"></picture>
+
+Held-out scenes next to all 10 mini scenes (8 of which were in training):
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/class_range_heatmap_dark.png"><img src="docs/assets/class_range_heatmap_light.png" alt="Recall heatmaps by class and distance, held-out and all mini scenes" width="100%"></picture>
 
 3. **Size matters at range, and depth error grows with it.** In all 10 mini scenes, 8–12 m vehicles are found 81 % of the time within 40 m but 3 % at 40 m or more. Boxes longer than 12 m (articulated buses, trailers) reach only 50 % recall even within 40 m. Median BEV centre error grows from 0.3 m (0–10 m) to about 1.1 m (40–50 m) for cars.
 4. **Night is not the problem here.** Night recall tracks day recall at every range. The three night scenes are in BEVFormer's training split, though, so this is an upper bound and not a robustness claim.
@@ -56,6 +64,10 @@ The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv
 5. **Depth is the root error.** The largest false-positive tag is *"real object, placed 2–4 m off in depth"*: 350 of 773 held-out FPs. Then come duplicates (186) and ghosts with no LiDAR returns at all (173). Among misses, objects the model found but scored below threshold dominate inside 50 m; past 50 m every miss is outside the grid.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/failures_dark.png"><img src="docs/assets/report/failures_light.png" alt="Stacked bars of failure types by distance" width="100%"></picture>
+
+Misses and false positives side by side:
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/failures_dark.png"><img src="docs/assets/failures_light.png" alt="Stacked bars of failure tags by distance for misses and false positives" width="100%"></picture>
 
 ## Worst-case gallery
 
