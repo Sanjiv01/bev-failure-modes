@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+checkpoints/
+third_party/
+outputs/
+docs/index_body.html
+.claude/

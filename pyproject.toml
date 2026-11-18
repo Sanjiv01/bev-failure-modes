@@ -1,0 +1,20 @@
+[project]
+name = "bevdiag"
+version = "0.1.0"
+description = "Evaluate / diagnose / improve loop for camera BEV detection on nuScenes, sliced for long-range freight scenarios"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.4", "torchvision>=0.19", "nuscenes-devkit>=1.1.11", "numpy<2", "pandas>=2.0",
+  "matplotlib>=3.8", "opencv-python-headless>=4.8", "pillow>=10", "psutil>=5.9", "pyquaternion>=0.9",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["bevdiag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]

@@ -1,0 +1,13 @@
+# GPU build of PyTorch (RTX 50xx / Blackwell needs cu128+):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+torch>=2.4
+torchvision>=0.19
+nuscenes-devkit>=1.1.11
+numpy<2
+pandas>=2.0
+matplotlib>=3.8
+opencv-python-headless>=4.8
+pillow>=10
+psutil>=5.9
+pyquaternion>=0.9
+pytest>=8
