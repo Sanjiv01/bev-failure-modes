@@ -22,7 +22,7 @@
 **One evaluate → diagnose → improve loop for camera BEV perception, scored on what matters to highway freight: range and large vehicles.**
 The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv, no custom CUDA ops), are run on public nuScenes mini. The baseline is reproduced with the official devkit, errors are sliced by distance, class, size, lighting and visibility, every miss and false positive is tagged with a failure type, and one cheap fix is measured.
 
-**[Interactive report →](https://claude.ai/artifact/X29C2bskYnTTX6AZVEJQET)** (same page in-repo: [`docs/index.html`](docs/index.html); serve `docs/` with GitHub Pages)
+**[Open the interactive report →](https://sanjiv01.github.io/bev-failure-modes/)**: hover tooltips, held-out vs all-mini toggles and gallery filters. It's public, no login. Everything it shows is also reproduced below as static figures.
 
 ## Headline results
 
@@ -61,14 +61,63 @@ The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv
 
 ## Worst-case gallery
 
-Frames ranked by missed large vehicles (×3), other in-grid misses and confident FPs. Each gets a camera view (with every box projected) beside the BEV, plus a generated one-line diagnosis.
+Frames ranked by missed large vehicles (×3), other in-grid misses and confident false positives. Each shows the camera with the most failures, every box projected into it, beside the bird's-eye view. The yellow circle marks the failure the diagnosis is about. Blue = true positive, orange = false positive, violet dashed = missed.
 
-| | |
-|---|---|
-| ![](docs/assets/gallery/heldout_00_light.jpg) | ![](docs/assets/gallery/heldout_01_light.jpg) |
-| ![](docs/assets/gallery/trainscene_00_light.jpg) | ![](docs/assets/gallery/trainscene_03_light.jpg) |
+#### scene-0916 · frame 24 · CAM FRONT RIGHT · day · *held-out*
 
-All eight cases with their diagnoses and tag filters are in the [interactive report](docs/index.html).
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_00_dark.jpg"><img src="docs/assets/gallery/heldout_00_light.jpg" alt="scene-0916 frame 24: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 5 m truck at 27 m is ≤40 % visible and was missed; 11 above-threshold boxes placed 2–4 m off the true depth; 5 ghost boxes with zero LiDAR returns.  
+`occluded` · `depth error` · `ghost (no LiDAR)` · 25 misses · 18 false positives
+
+#### scene-0103 · frame 10 · CAM BACK LEFT · day · *held-out*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_01_dark.jpg"><img src="docs/assets/gallery/heldout_01_light.jpg" alt="scene-0103 frame 10: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 7 m truck at 71 m sits outside the ±51.2 m BEV grid and can never be detected; 12 above-threshold boxes placed 2–4 m off the true depth; 5 duplicate boxes on already-detected objects.  
+`outside grid` · `depth error` · `duplicates` · 20 misses · 19 false positives
+
+#### scene-0916 · frame 7 · CAM FRONT · day · *held-out*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_02_dark.jpg"><img src="docs/assets/gallery/heldout_02_light.jpg" alt="scene-0916 frame 7: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 5 m truck at 49 m is ≤40 % visible and was missed; 5 above-threshold boxes placed 2–4 m off the true depth; 3 duplicate boxes on already-detected objects.  
+`occluded` · `depth error` · `duplicates` · 35 misses · 9 false positives
+
+#### scene-0103 · frame 17 · CAM BACK · day · *held-out*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_03_dark.jpg"><img src="docs/assets/gallery/heldout_03_light.jpg" alt="scene-0103 frame 17: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 7 m truck at 57 m sits outside the ±51.2 m BEV grid and can never be detected; 9 above-threshold boxes placed 2–4 m off the true depth; 4 duplicate boxes on already-detected objects.  
+`outside grid` · `depth error` · `duplicates` · 23 misses · 14 false positives
+
+#### scene-0061 · frame 9 · CAM FRONT · day · *seen in training*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_00_dark.jpg"><img src="docs/assets/gallery/trainscene_00_light.jpg" alt="scene-0061 frame 9: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** 3 large vehicles at 62–74 m sit outside the ±51.2 m BEV grid and can never be detected; a 10 m truck at 20 m got a box 2–4 m off in depth; 10 above-threshold boxes placed 2–4 m off the true depth.  
+`outside grid` · `depth error` · `ghost (no LiDAR)` · `duplicates` · 53 misses · 24 false positives
+
+#### scene-0061 · frame 18 · CAM BACK RIGHT · day · *seen in training*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_01_dark.jpg"><img src="docs/assets/gallery/trainscene_01_light.jpg" alt="scene-0061 frame 18: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 4 m construction vehicle at 12 m was detected as the wrong class; 16 above-threshold boxes placed 2–4 m off the true depth; 6 duplicate boxes on already-detected objects.  
+`wrong class` · `depth error` · `duplicates` · 54 misses · 25 false positives
+
+#### scene-1094 · frame 13 · CAM BACK RIGHT · night · *seen in training*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_02_dark.jpg"><img src="docs/assets/gallery/trainscene_02_light.jpg" alt="scene-1094 frame 13: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** 12 above-threshold boxes placed 2–4 m off the true depth; 3 duplicate boxes on already-detected objects; 23 more objects were found but scored under the threshold.  
+`depth error` · `duplicates` · `below threshold` · 31 misses · 17 false positives
+
+#### scene-1094 · frame 7 · CAM FRONT RIGHT · night · *seen in training*
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_03_dark.jpg"><img src="docs/assets/gallery/trainscene_03_light.jpg" alt="scene-1094 frame 7: camera view and bird's-eye view" width="100%"></picture>
+
+**Diagnosis:** A 13 m bus at 42 m was seen but scored below 0.39; 8 above-threshold boxes placed 2–4 m off the true depth; 4 duplicate boxes on already-detected objects.  
+`below threshold` · `depth error` · `duplicates` · 23 misses · 13 false positives
 
 ## The fix: LiDAR sanity filter
 
