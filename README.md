@@ -22,7 +22,9 @@
 **One evaluate → diagnose → improve loop for camera BEV perception, scored on what matters to highway freight: range and large vehicles.**
 The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv, no custom CUDA ops), are run on public nuScenes mini. The baseline is reproduced with the official devkit, errors are sliced by distance, class, size, lighting and visibility, every miss and false positive is tagged with a failure type, and one cheap fix is measured.
 
-**[Open the interactive report →](https://sanjiv01.github.io/bev-failure-modes/)**: hover tooltips, held-out vs all-mini toggles and gallery filters. It's public, no login. Everything it shows is also reproduced below as static figures.
+### The report at a glance
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/overview_dark.jpg"><img src="docs/assets/report/overview_light.jpg" alt="Report header: official mAP/NDS, recall within 30 m, at 40-50 m and beyond 50 m, range budget ruler and scene animation" width="100%"></picture>
 
 ## Headline results
 
@@ -39,100 +41,35 @@ The official pretrained BEVFormer-tiny weights, ported to plain PyTorch (no mmcv
 
 ## What the slicing shows
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/range_metrics_dark.png"><img src="docs/assets/range_metrics_light.png" alt="Recall, precision and AP by distance band for three object groups" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/range_dark.png"><img src="docs/assets/report/range_light.png" alt="Recall by distance for cars, large vehicles and pedestrians, with the region outside the BEV grid shaded" width="100%"></picture>
 
 1. **Range is the dominant failure.** Recall falls from 96 % (cars, 0–10 m) to 20 % at 40–50 m and to zero past the grid. Precision falls with it (91 % → 34 %), so the few far detections are also mostly wrong. For a truck that needs about 160 m to stop from 65 mph, the usable perception horizon here is about 30 m.
 2. **Large vehicles fall off a cliff.** Trucks and buses are found 93–100 % of the time within 20 m, but only 5 % at 40–50 m (n=22) and 0 % beyond. Their extra size does not buy extra range.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/class_range_heatmap_dark.png"><img src="docs/assets/class_range_heatmap_light.png" alt="Heatmap of recall by class and distance for held-out and all mini scenes" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/heatmap_dark.png"><img src="docs/assets/report/heatmap_light.png" alt="Recall by class and distance band" width="100%"></picture>
 
-3. **Depth is the root error.** Median BEV centre error grows from 0.3 m (0–10 m) to about 1.1 m (40–50 m) for cars. The largest false-positive tag is *"real object, placed 2–4 m off in depth"*: 350 of 773 held-out FPs. Then come duplicates (186) and ghosts with no LiDAR returns at all (173).
+3. **Size matters at range, and depth error grows with it.** In all 10 mini scenes, 8–12 m vehicles are found 81 % of the time within 40 m but 3 % at 40 m or more. Boxes longer than 12 m (articulated buses, trailers) reach only 50 % recall even within 40 m. Median BEV centre error grows from 0.3 m (0–10 m) to about 1.1 m (40–50 m) for cars.
+4. **Night is not the problem here.** Night recall tracks day recall at every range. The three night scenes are in BEVFormer's training split, though, so this is an upper bound and not a robustness claim.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/failures_dark.png"><img src="docs/assets/failures_light.png" alt="Stacked bars of failure tags by distance for misses and false positives" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/size_loc_dark.png"><img src="docs/assets/report/size_loc_light.png" alt="Vehicle recall by length, centre error versus distance, and day versus night recall" width="100%"></picture>
 
-4. **Size matters at range.** In all 10 mini scenes, 8–12 m vehicles are found 81 % of the time within 40 m but 3 % at 40 m or more. Boxes longer than 12 m (articulated buses, trailers) reach only 50 % recall even within 40 m.
+5. **Depth is the root error.** The largest false-positive tag is *"real object, placed 2–4 m off in depth"*: 350 of 773 held-out FPs. Then come duplicates (186) and ghosts with no LiDAR returns at all (173). Among misses, objects the model found but scored below threshold dominate inside 50 m; past 50 m every miss is outside the grid.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/size_dark.png"><img src="docs/assets/size_light.png" alt="Vehicle recall by ground-truth length, near versus far" width="100%"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/localization_dark.png"><img src="docs/assets/localization_light.png" alt="True-positive centre error and radial bias versus distance" width="100%"></picture>
-
-5. **Night is not the problem here.** Night recall tracks day recall at every range. The three night scenes are in BEVFormer's training split, though, so this is an upper bound and not a robustness claim.
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/lighting_dark.png"><img src="docs/assets/lighting_light.png" alt="Day versus night recall by distance" width="60%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/failures_dark.png"><img src="docs/assets/report/failures_light.png" alt="Stacked bars of failure types by distance" width="100%"></picture>
 
 ## Worst-case gallery
 
-Frames ranked by missed large vehicles (×3), other in-grid misses and confident false positives. Each shows the camera with the most failures, every box projected into it, beside the bird's-eye view. The yellow circle marks the failure the diagnosis is about. Blue = true positive, orange = false positive, violet dashed = missed.
+Frames ranked by missed large vehicles (×3), other in-grid misses and confident false positives. Each card shows the camera with the most failures (every box projected into it) beside the bird's-eye view, with an automatic one-line diagnosis. Blue = true positive, orange = false positive, violet dashed = missed, yellow circle = the failure the diagnosis is about. Full-size frames are in [`docs/assets/gallery/`](docs/assets/gallery).
 
-#### scene-0916 · frame 24 · CAM FRONT RIGHT · day · *held-out*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_00_dark.jpg"><img src="docs/assets/gallery/heldout_00_light.jpg" alt="scene-0916 frame 24: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 5 m truck at 27 m is ≤40 % visible and was missed; 11 above-threshold boxes placed 2–4 m off the true depth; 5 ghost boxes with zero LiDAR returns.  
-`occluded` · `depth error` · `ghost (no LiDAR)` · 25 misses · 18 false positives
-
-#### scene-0103 · frame 10 · CAM BACK LEFT · day · *held-out*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_01_dark.jpg"><img src="docs/assets/gallery/heldout_01_light.jpg" alt="scene-0103 frame 10: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 7 m truck at 71 m sits outside the ±51.2 m BEV grid and can never be detected; 12 above-threshold boxes placed 2–4 m off the true depth; 5 duplicate boxes on already-detected objects.  
-`outside grid` · `depth error` · `duplicates` · 20 misses · 19 false positives
-
-#### scene-0916 · frame 7 · CAM FRONT · day · *held-out*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_02_dark.jpg"><img src="docs/assets/gallery/heldout_02_light.jpg" alt="scene-0916 frame 7: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 5 m truck at 49 m is ≤40 % visible and was missed; 5 above-threshold boxes placed 2–4 m off the true depth; 3 duplicate boxes on already-detected objects.  
-`occluded` · `depth error` · `duplicates` · 35 misses · 9 false positives
-
-#### scene-0103 · frame 17 · CAM BACK · day · *held-out*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/heldout_03_dark.jpg"><img src="docs/assets/gallery/heldout_03_light.jpg" alt="scene-0103 frame 17: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 7 m truck at 57 m sits outside the ±51.2 m BEV grid and can never be detected; 9 above-threshold boxes placed 2–4 m off the true depth; 4 duplicate boxes on already-detected objects.  
-`outside grid` · `depth error` · `duplicates` · 23 misses · 14 false positives
-
-#### scene-0061 · frame 9 · CAM FRONT · day · *seen in training*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_00_dark.jpg"><img src="docs/assets/gallery/trainscene_00_light.jpg" alt="scene-0061 frame 9: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** 3 large vehicles at 62–74 m sit outside the ±51.2 m BEV grid and can never be detected; a 10 m truck at 20 m got a box 2–4 m off in depth; 10 above-threshold boxes placed 2–4 m off the true depth.  
-`outside grid` · `depth error` · `ghost (no LiDAR)` · `duplicates` · 53 misses · 24 false positives
-
-#### scene-0061 · frame 18 · CAM BACK RIGHT · day · *seen in training*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_01_dark.jpg"><img src="docs/assets/gallery/trainscene_01_light.jpg" alt="scene-0061 frame 18: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 4 m construction vehicle at 12 m was detected as the wrong class; 16 above-threshold boxes placed 2–4 m off the true depth; 6 duplicate boxes on already-detected objects.  
-`wrong class` · `depth error` · `duplicates` · 54 misses · 25 false positives
-
-#### scene-1094 · frame 13 · CAM BACK RIGHT · night · *seen in training*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_02_dark.jpg"><img src="docs/assets/gallery/trainscene_02_light.jpg" alt="scene-1094 frame 13: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** 12 above-threshold boxes placed 2–4 m off the true depth; 3 duplicate boxes on already-detected objects; 23 more objects were found but scored under the threshold.  
-`depth error` · `duplicates` · `below threshold` · 31 misses · 17 false positives
-
-#### scene-1094 · frame 7 · CAM FRONT RIGHT · night · *seen in training*
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/trainscene_03_dark.jpg"><img src="docs/assets/gallery/trainscene_03_light.jpg" alt="scene-1094 frame 7: camera view and bird's-eye view" width="100%"></picture>
-
-**Diagnosis:** A 13 m bus at 42 m was seen but scored below 0.39; 8 above-threshold boxes placed 2–4 m off the true depth; 4 duplicate boxes on already-detected objects.  
-`below threshold` · `depth error` · `duplicates` · 23 misses · 13 false positives
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/gallery_dark.jpg"><img src="docs/assets/report/gallery_light.jpg" alt="Eight worst-case frames with camera and bird's-eye views and one-line diagnoses" width="100%"></picture>
 
 ## The fix: LiDAR sanity filter
 
-Drop any camera box whose box, grown by 0.5 m on every side, contains no LiDAR return. LiDAR only vetoes boxes; it never moves or creates one. The setting (≥1 point, +0.5 m) was fixed before evaluation, and the sweep below shows how sensitive it is.
+Drop any camera box whose box, grown by 0.5 m on every side, contains no LiDAR return. LiDAR only vetoes boxes; it never moves or creates one. The setting (≥1 point, +0.5 m) was fixed before evaluation (highlighted row), and the sweep shows how sensitive it is.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/fix_dark.png"><img src="docs/assets/fix_light.png" alt="Precision and recall before and after the filter, and mAP across filter settings" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/report/fix_dark.png"><img src="docs/assets/report/fix_light.png" alt="Precision and recall before and after the LiDAR filter, and the filter-setting sweep table" width="100%"></picture>
 
-| min points | box grown | mAP | NDS | precision | recall | F1 |
-|---|---|---|---|---|---|---|
-| — | baseline | 0.2638 | 0.3266 | 73.2 % | 55.7 % | 0.632 |
-| **1** | **0.5 m** | **0.2688** | **0.3309** | **80.0 %** | **53.1 %** | **0.638** |
-| 3 | 0.5 m | 0.2658 | 0.3300 | 82.5 % | 50.5 % | 0.627 |
-| 1 | 0.0 m | 0.2309 | 0.3209 | 85.6 % | 42.1 % | 0.565 |
-
-The un-grown variant *hurts* (−3.3 mAP points). It deletes correct detections whose boxes are shifted in depth, which confirms finding 3 from another angle.
+The un-grown variant *hurts* (−3.3 mAP points). It deletes correct detections whose boxes are shifted in depth, which confirms the depth finding from another angle.
 
 ## Recommendations
 
@@ -164,7 +101,7 @@ python -m pytest -q                                     # 13 tests (3 need the d
 | [`bevdiag/data.py`](bevdiag/data.py) | nuScenes → per-frame camera tensors, `lidar2img`, and the 18-d CAN-bus vector built exactly as the reference converter builds it. |
 | [`bevdiag/diagnose.py`](bevdiag/diagnose.py) | nuScenes-style matcher (cross-checked against the devkit in tests, *without* the 50 m cut-off), range/size/class/visibility slices, failure tagging. |
 | [`bevdiag/fixes.py`](bevdiag/fixes.py) | LiDAR sanity filter; range-aware thresholds with cross-scene validation. |
-| [`bevdiag/report.py`](bevdiag/report.py), [`viz.py`](bevdiag/viz.py), [`html.py`](bevdiag/html.py) | Light and dark figures, gallery, GIF, interactive report. |
+| [`bevdiag/report.py`](bevdiag/report.py), [`viz.py`](bevdiag/viz.py), [`html.py`](bevdiag/html.py) | Light and dark figures, gallery, GIF, and the HTML report (`docs/index.html`) the screenshots above come from. |
 | [`tests/`](tests) | Deformable attention vs a naive bilinear reference, point-in-box vs the devkit, AP/matching identical to the devkit, CAN-bus quirk, strict checkpoint load, official-metric regression. |
 
 **Why a port instead of MMDetection3D?** mmcv's compiled ops don't build against PyTorch ≥ 2.7, which RTX 50-series (sm_120) GPUs need, and this Windows laptop has no CUDA toolkit. The port keeps the reference module names so the state dict maps 1:1. It replaces the custom deformable-attention kernel with `grid_sample` (same math, tested), and matches the published mAP within the noise expected on mini.
